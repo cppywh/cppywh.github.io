@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="300" viewBox="0 0 800 300" role="img" aria-label="V2旧版greedy协议下，500题验证集答对题数：基座11，SFT合并前243，SFT合并后250，三奖励GRPO后250">
+  <rect width="800" height="300" fill="#ffffff"/>
+  <text x="30" y="32" font-family="sans-serif" font-size="20" font-weight="700" fill="#17213a">V2：三奖励 GRPO 没有超过对应 SFT</text>
+  <text x="30" y="54" font-family="sans-serif" font-size="12" fill="#546078">同一 500 题、旧版 greedy + 惩罚解码；不与最终采样协议连线</text>
+  <g font-family="sans-serif" font-size="14" fill="#17213a">
+    <text x="30" y="105">原始基座</text>
+    <text x="30" y="155">SFT 合并前</text>
+    <text x="30" y="205">SFT 合并后</text>
+    <text x="30" y="255">三奖励 GRPO</text>
+  </g>
+  <g fill="#e7edf7"><rect x="170" y="86" width="500" height="25" rx="5"/><rect x="170" y="136" width="500" height="25" rx="5"/><rect x="170" y="186" width="500" height="25" rx="5"/><rect x="170" y="236" width="500" height="25" rx="5"/></g>
+  <rect x="170" y="86" width="11" height="25" rx="5" fill="#aebbd0"/>
+  <rect x="170" y="136" width="243" height="25" rx="5" fill="#7f9ad6"/>
+  <rect x="170" y="186" width="250" height="25" rx="5" fill="#4273d4"/>
+  <rect x="170" y="236" width="250" height="25" rx="5" fill="#21a389"/>
+  <g font-family="sans-serif" font-size="15" font-weight="700" fill="#17213a"><text x="690" y="105">11 / 500</text><text x="690" y="155">243 / 500</text><text x="690" y="205">250 / 500</text><text x="690" y="255">250 / 500</text></g>
+</svg>

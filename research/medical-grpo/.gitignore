@@ -1,0 +1,11 @@
+# Keep the public note folder limited to reviewed summaries.
+*.ipynb
+*.jsonl
+*.safetensors
+*.pt
+*.pth
+*.ckpt
+*.env
+TODO.md
+data/evidence-index.csv
+data/recompute_metrics.py

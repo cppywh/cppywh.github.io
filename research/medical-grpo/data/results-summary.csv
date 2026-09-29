@@ -1,0 +1,21 @@
+experiment_id,stage,protocol_id,n,correct_n,correct_pct,format_ok_n,parse_ok_n,truncated_n,verification
+EXP-001,Qwen2.5 smoke / base,q25-smoke-32,32,17,53.125,0,32,,逐题JSONL本地复算
+EXP-001,Qwen2.5 smoke / SFT,q25-smoke-32,32,17,53.125,32,32,,逐题JSONL本地复算
+EXP-001,Qwen2.5 smoke / GRPO,q25-smoke-32,32,17,53.125,32,32,,逐题JSONL本地复算
+EXP-002,Qwen2.5 SFT merged / GRPO start,q25-v1-500,500,274,54.8,500,500,,逐题JSONL本地复算
+EXP-002,Qwen2.5 SFT adapter before merge,q25-v1-500,500,302,60.4,500,500,,逐题JSONL本地复算
+EXP-003,Qwen2.5 GRPO G2,q25-v1-500,500,307,61.4,500,500,,逐题JSONL本地复算
+EXP-004,Qwen2.5 GRPO G8,q25-v1-500,500,321,64.2,500,500,,逐题JSONL本地复算
+EXP-002,Qwen2.5 W0 FP32,q25-fp32-500,500,304,60.8,6,499,,逐题JSONL本地复算
+EXP-002,Qwen2.5 SFT FP32,q25-fp32-500,500,331,66.2,500,500,,逐题JSONL本地复算
+EXP-003,Qwen2.5 GRPO G2 FP32,q25-fp32-500,500,332,66.4,500,500,,逐题JSONL本地复算
+EXP-004,Qwen2.5 GRPO G8 FP32,q25-fp32-500,500,334,66.8,500,500,,逐题JSONL本地复算
+EXP-005,Qwen3 W0 greedy,q3-v6-greedy-500,500,11,2.2,0,13,26,逐题JSONL本地复算
+EXP-005,Qwen3 SFT before merge greedy,q3-v6-greedy-500,500,243,48.6,499,499,1,逐题JSONL本地复算
+EXP-005,Qwen3 SFT merged greedy,q3-v6-greedy-500,500,250,50.0,499,499,0,逐题JSONL本地复算
+EXP-006,Qwen3 GRPO three rewards greedy,q3-v6-greedy-500,500,250,50.0,498,498,2,逐题JSONL本地复算
+EXP-007,Qwen3 SFT 10k epoch 1 greedy,q3-v3-greedy-500,500,236,47.2,499,499,1,逐题JSONL本地复算
+EXP-005,Initial SFT sampled,q3-final-sample-500,500,239,47.8,481,481,18,逐题JSONL本地复算
+EXP-008,Repair SFT sampled,q3-final-sample-500,500,231,46.2,483,483,16,逐题JSONL本地复算
+EXP-009,Direct GRPO sampled,q3-final-sample-500,500,254,50.8,489,489,10,逐题JSONL本地复算
+EXP-010,DAPO sampled,q3-final-sample-500,500,270,54.0,485,485,15,逐题JSONL本地复算
