@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="300" viewBox="0 0 760 300" role="img" aria-label="Qwen3 基座分为 V2 两千题 SFT 与 V3 一万题 SFT；V2 的权重继续分出三奖励 GRPO、纠错 SFT、直接 GRPO 和 DAPO 四条路线">
+  <rect width="760" height="300" rx="12" fill="#f5f7f3"/>
+  <g stroke="#9aaba9" stroke-width="2" fill="none"><path d="M150 140H215"/><path d="M150 140V260H215"/><path d="M375 140H430V40H460"/><path d="M430 100H460"/><path d="M430 160H460"/><path d="M430 220H460"/></g>
+  <g font-family="sans-serif" font-size="15" text-anchor="middle">
+    <rect x="20" y="113" width="130" height="54" rx="8" fill="#dce9e8"/><text x="85" y="146" fill="#284b52">Qwen3-1.7B</text>
+    <rect x="215" y="113" width="160" height="54" rx="8" fill="#bcd2d0"/><text x="295" y="146" fill="#284b52">V2 · 2千题 SFT</text>
+    <rect x="215" y="235" width="160" height="50" rx="8" fill="#e8e9dd"/><text x="295" y="266" fill="#5c6254">V3 · 1万题 SFT</text>
+    <rect x="460" y="17" width="245" height="46" rx="8" fill="#e7ece5"/><text x="582" y="46" fill="#38514a">三奖励 GRPO</text>
+    <rect x="460" y="77" width="245" height="46" rx="8" fill="#e7ece5"/><text x="582" y="106" fill="#38514a">纠错 SFT（独立探索）</text>
+    <rect x="460" y="137" width="245" height="46" rx="8" fill="#dce9e8"/><text x="582" y="166" fill="#284b52">直接 GRPO</text>
+    <rect x="460" y="197" width="245" height="46" rx="8" fill="#dce9e8"/><text x="582" y="226" fill="#284b52">DAPO 配置方案</text>
+  </g>
+  <text x="23" y="28" font-family="sans-serif" font-size="12" fill="#687773">箭头表示权重继承，不表示实验发生顺序</text>
+</svg>

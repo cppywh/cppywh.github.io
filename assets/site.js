@@ -46,13 +46,13 @@
   const progress = document.querySelector('.reading-progress');
   if (progress) {
     const links = [...document.querySelectorAll('.toc nav a')];
-    const sections = links.map(link => document.getElementById(link.hash.slice(1)));
+    const sections = links.map(link => document.getElementById(decodeURIComponent(link.hash.slice(1))));
     let scheduled = false;
     const updateReading = () => {
       const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
       progress.style.width = `${maxScroll > 0 ? Math.min(100, Math.max(0, window.scrollY / maxScroll * 100)) : 0}%`;
       let current = 0;
-      sections.forEach((section, index) => { if (section.getBoundingClientRect().top <= 150) current = index; });
+      sections.forEach((section, index) => { if (section && section.getBoundingClientRect().top <= 150) current = index; });
       links.forEach((link, index) => { link.classList.toggle('active', index === current); if (index === current) link.setAttribute('aria-current', 'location'); else link.removeAttribute('aria-current'); });
       scheduled = false;
     };

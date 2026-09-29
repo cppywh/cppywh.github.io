@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta name="description" content="说明公开证据、环境和再运行边界。"><meta name="robots" content="noindex,nofollow"><title>代码与复核 · iris 学习手记</title><link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml"><script src="../../assets/theme.js"></script><link rel="stylesheet" href="../../assets/style.css"><script src="../../assets/site.js" defer></script></head>
+<body class="inner-page research-note"><div class="wallpaper-scene" aria-hidden="true"></div><a class="skip" href="#main">跳到正文</a><header class="site-header"><div class="header-inner"><a class="brand" href="../../index.html" aria-label="iris 学习手记首页"><span class="brand-symbol iris-mark" aria-hidden="true">✳</span><span>iris<span class="brand-sub"> / 学习手记</span></span></a><nav aria-label="主导航"><a href="../../index.html">首页</a><a href="../../notes.html" aria-current="page">学习手记</a><a href="../../about.html">关于</a></nav><a class="github" href="https://github.com/cppywh" target="_blank" rel="noopener noreferrer" aria-label="GitHub（新窗口）"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-4 1-4-2-6-2m12 5v-4c0-1 .2-2-1-3 4 0 7-2 7-6 0-1-1-3-1-3 0-1 0-3-1-4-2 0-3 1-4 2a12 12 0 0 0-6 0C8 3 6 2 4 2 3 3 3 5 4 6c0 0-1 2-1 3 0 4 3 6 7 6-1 1-1 2-1 3v4"/></svg></a></div></header>
+<main id="main"><div class="reading-progress" aria-hidden="true"></div><div class="page-wrap article-wrap"><a class="back-link" href="../../notes.html">← 返回学习手记</a><header class="article-header"><div class="eyebrow">MEDICAL GRPO / 05</div><h1>代码与复核：先读结果，再决定是否运行</h1><p class="article-lead">说明公开证据、环境和再运行边界。</p><div class="post-meta"><span>iris</span><span>实验记录</span><span>基于公开汇总数据</span></div></header><div class="article-layout"><article class="prose"><p><strong>复算已完成；训练没有为写笔记而重跑。</strong> 本地归档缺合并基座、LoRA 权重和完整优化器 checkpoint，不能只凭 notebook 与指标文件复现同一训练。主文件是medical_grpo2 (1).ipynb（原始文件仅存于本地）；当前代码可能经过修改，不能自动当成产生旧输出时的配置。</p>
+<h2 id="可复核什么">可复核什么</h2>
+<p>本地复算脚本和逐题 JSONL 没有公开，因此这份仓库<strong>只能核查汇总值和协议说明，不能独立重跑逐题复算</strong>。本地复算已执行成功：脚本检查题号唯一和主实验四份 <code>(id, gold)</code> 顺序一致，汇总 20 行历史与主实验记录；不加载模型、不用 GPU。两张图只取同协议的真实结果，不插值训练曲线：<a href="assets/validation-accuracy.svg">主实验</a>、<a href="assets/v2-greedy-accuracy.svg">V2 旧协议</a>。详细证据映射保留在本地。</p>
+<h2 id="如果将来重新运行">如果将来重新运行</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>主 notebook 单元 / 函数</th>
+<th>性质</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>环境、配置、解析与评估定义</td>
+<td>A0～A3c；<code>extract_answer</code>、<code>evaluate_vllm</code></td>
+<td>定义为主；A1 建目录</td>
+</tr>
+<tr>
+<td>清洗与冻结题池</td>
+<td>B0～B2；<code>question_key</code>、<code>build_candidates</code></td>
+<td>B1c 写数据；不训练</td>
+</tr>
+<tr>
+<td>初始 SFT 评估</td>
+<td>C0～C1</td>
+<td>GPU 推理；已有 JSONL 可直接复核</td>
+</tr>
+<tr>
+<td>四答诊断</td>
+<td>D0～D2</td>
+<td>GPU 推理；不更新权重</td>
+</tr>
+<tr>
+<td>纠错探索</td>
+<td>E0～E4</td>
+<td><strong>E1 训练</strong>；与后续 RL 分支分开</td>
+</tr>
+<tr>
+<td>直接 GRPO</td>
+<td>F0～F3；<code>MixedOnlyGRPOTrainer</code></td>
+<td><strong>F2 训练</strong>；从初始 SFT 启动</td>
+</tr>
+<tr>
+<td>GRPO 评估</td>
+<td>G0～G3</td>
+<td>推理占 GPU；读既有汇总不训练</td>
+</tr>
+<tr>
+<td>DAPO 方案</td>
+<td>H0～H6；<code>build_dapo_command</code></td>
+<td><strong>H3 开启训练开关后会训练</strong>；归档默认关闭</td>
+</tr>
+</tbody>
+</table></div>
+<p>原始实现请读对应单元。本文不复制长代码；训练奖励插件（原始文件仅存于本地）和实际 DAPO 参数（原始文件仅存于本地）可用于核对配置，不代表已完成论文逐项复现。</p>
+<h2 id="环境与文件索引">环境与文件索引</h2>
+<p>Qwen3 主路线保存的环境为 RTX 4090、<code>torch 2.8.0+cu128</code>、<code>transformers 4.55.2</code>、<code>trl 0.21.0</code>、<code>peft 0.17.1</code>、<code>vllm 0.10.2</code>；DAPO 使用独立的 <code>ms-swift 4.5.3</code>、<code>trl 0.26.2</code>、<code>transformers 4.56.1</code>。具体以主协议（原始文件仅存于本地）和归档参数（原始文件仅存于本地）为准。Qwen2.5 的环境另见早期记录（原始文件仅存于本地），不要混装依赖。</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>文件</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>medical_grpo.ipynb（原始文件仅存于本地）</td>
+<td>Qwen2.5 smoke、G=2/G=8、FP32 复评</td>
+</tr>
+<tr>
+<td>medical_grpo2.ipynb（原始文件仅存于本地）</td>
+<td>Qwen3 V2：2千题 SFT 与三奖励 GRPO</td>
+</tr>
+<tr>
+<td>medical_grpo3.ipynb（原始文件仅存于本地）</td>
+<td>Qwen3 V3：1万题 SFT；第二轮逐题评估缺失</td>
+</tr>
+<tr>
+<td>medical_grpo2 (1).ipynb（原始文件仅存于本地）</td>
+<td>最终纠错探索、直接 GRPO、DAPO 配置对照</td>
+</tr>
+<tr>
+<td>最终云端输出归档（原始文件仅存于本地） · 运行摘要（原始文件仅存于本地）</td>
+<td>输出、评估配置与耗时；不含权重</td>
+</tr>
+<tr>
+<td><a href="data/experiment-index.csv">实验索引</a> · <a href="data/results-summary.csv">结果表</a> · 证据索引（仅存于本地）</td>
+<td>配置、协议、数字与原文件位置</td>
+</tr>
+</tbody>
+</table></div>
+<p>公开笔记不附题目原文、模型权重或私有证据归档。无法复训的条件及未完成的 test、多种子和 V3 第二轮核验见待补清单（仅存于本地）。</p>
+<p><a href="https://github.com/cppywh/cppywh.github.io/blob/main/research/medical-grpo/04-reproduction-and-code.md" target="_blank" rel="noopener noreferrer">在 GitHub 查看 Markdown 原文 ↗</a></p><div class="article-end"><span>— END —</span><p>记录到这里，下一步继续。</p></div><a class="next-article" href="index.html"><span>继续阅读</span><strong>从格式学会到答题改进</strong><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16M14 6l6 6-6 6"/></svg></a></article><aside class="toc"><div class="toc-inner"><span class="eyebrow">本页目录</span><nav aria-label="文章目录"><a href="#%E5%8F%AF%E5%A4%8D%E6%A0%B8%E4%BB%80%E4%B9%88"><span>01</span>可复核什么</a><a href="#%E5%A6%82%E6%9E%9C%E5%B0%86%E6%9D%A5%E9%87%8D%E6%96%B0%E8%BF%90%E8%A1%8C"><span>02</span>如果将来重新运行</a><a href="#%E7%8E%AF%E5%A2%83%E4%B8%8E%E6%96%87%E4%BB%B6%E7%B4%A2%E5%BC%95"><span>03</span>环境与文件索引</a></nav><a class="back-top" href="#main">↑ 回到顶部</a></div></aside></div></div></main><footer class="site-footer"><div><a class="footer-name" href="../../index.html">iris / 学习手记</a><p>把实验做一遍，把理解写下来。</p></div><div class="footer-right"><span><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg> 保持好奇，慢慢生长。</span><small>实验与学习记录 · <a data-wallpaper-source href="https://wallhaven.cc/w/6kqzl6" target="_blank" rel="noopener noreferrer">壁纸来源 ↗</a></small></div></footer><div class="toast" role="status" aria-live="polite"></div></body></html>

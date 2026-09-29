@@ -100,3 +100,11 @@ body{isolation:isolate}
 @media(max-width:1100px){.home-page .journal-panel{padding:28px 23px;margin:28px 0}.iris-home{gap:30px}}
 @media(max-width:800px){.home-page .journal-panel{padding:25px 20px}.iris-home{gap:24px;grid-template-columns:220px minmax(0,1fr)}.journal-entries .row-arrow{display:none}.identity-center{padding:35px 0}.refresh-hint{font-size:8px;margin-left:2px}.theme-picker{margin-left:5px}.identity-panel{min-height:660px}}
 @media(max-width:600px){.home-page .journal-panel{padding:24px 18px;margin:9px -6px 25px}.identity-panel{min-height:0}.identity-center{padding:22px 0 14px}.theme-picker{max-width:none;margin:0 0 15px 5px}.theme-picker-label{justify-content:flex-start;gap:25px}.theme-swatches>button{height:40px;width:34px}.theme-swatches>button[aria-pressed=true]:after{left:6px;top:9px}.refresh-hint{font-size:9px;margin-left:8px}.home-page .identity-panel:before{inset:35px -10px 0}.home-page .site-footer{padding:20px 14px;margin:0 18px}.wallpaper-scene{background-position:65% center}.home-page .journal-panel{backdrop-filter:none}}
+
+/* Public research notes are rendered from Markdown. */
+.research-note .prose img{display:block;max-width:100%;height:auto;margin:24px auto;border-radius:6px}
+.research-note .prose h2[id]{scroll-margin-top:105px}
+.research-note .prose :not(pre)>code{padding:2px 5px;border-radius:3px;background:var(--blue-soft);font:13px/1.5 Consolas,monospace;overflow-wrap:anywhere}
+.research-note .prose pre{margin:22px 0;background:var(--blue-soft);border-radius:5px;white-space:pre;overflow-x:auto}
+.research-note .prose a{text-decoration:underline;text-decoration-color:#aebfbd;text-underline-offset:3px}
+.research-note .prose .table-wrap{max-width:100%;overflow-x:auto}

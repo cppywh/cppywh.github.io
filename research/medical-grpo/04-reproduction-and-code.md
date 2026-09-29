@@ -2,7 +2,7 @@
 
 [← 入口](00-project-overview.md) · [实验设计](01-experiment-design.md) · [主结果](02-main-results.md)
 
-**复算已完成；训练没有为写笔记而重跑。**本地归档缺合并基座、LoRA 权重和完整优化器 checkpoint，不能只凭 notebook 与指标文件复现同一训练。主文件是medical_grpo2 (1).ipynb（原始文件仅存于本地）；当前代码可能经过修改，不能自动当成产生旧输出时的配置。
+**复算已完成；训练没有为写笔记而重跑。** 本地归档缺合并基座、LoRA 权重和完整优化器 checkpoint，不能只凭 notebook 与指标文件复现同一训练。主文件是medical_grpo2 (1).ipynb（原始文件仅存于本地）；当前代码可能经过修改，不能自动当成产生旧输出时的配置。
 
 ## 可复核什么
 

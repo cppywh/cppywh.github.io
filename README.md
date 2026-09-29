@@ -2,7 +2,7 @@
 
 浅色个人学习博客第一版。继续使用现有 `cppywh.github.io` 仓库，页面兼容 GitHub Pages。
 
-此版本用于 GitHub Pages 发布。三篇文章均为原创排版示例，不含个人 notebook、实验数据或本地文件。
+此版本用于 GitHub Pages 发布。首页现有一篇真实的[中文医考后训练实验记录](research/medical-grpo/)，另有三篇排版示例。公开文章只使用脱敏后的文字、图和汇总数据；原始 notebook、逐题输出与权重不在仓库中。
 
 ## 本地预览
 
@@ -16,18 +16,27 @@ python -m http.server 8765 --bind 127.0.0.1
 
 ## 修改与重新生成
 
-- `tools/build_site.py`：页面模板和三篇示例文章。
+- `tools/build_site.py`：网站页面模板、文章入口和三篇示例文章。
+- `research/medical-grpo/*.md`：真实项目记录的内容源；`tools/render_research_notes.py` 将其渲染为同目录 HTML。
+- `tools/requirements.txt`：渲染 Markdown 所需的 Python 依赖。
 - `assets/style.css`：浅色主题与移动端样式。
 - `assets/site.js`：分类、搜索、代码复制、目录高亮和阅读进度。
 - `index.html`、`notes.html`、`about.html`：生成的页面。
 - 三个 `*-notebook.html`：示例文章页。
 - `404.html`：GitHub Pages 错误页。
 
-修改模板后，在仓库目录执行 `python tools/build_site.py`，无需第三方依赖。直接修改生成的 HTML 会在下次生成时被覆盖。
+修改模板或医学项目 Markdown 后，在仓库目录执行：
+
+```powershell
+python -m pip install -r tools/requirements.txt
+python tools/build_site.py
+```
+
+生成的 HTML 会在下次构建时被覆盖；请修改脚本或 Markdown 内容源。
 
 ## 后续发布
 
-这版暂时保留 `noindex,nofollow`，避免示例文章被搜索引擎收录。正式发布真实内容时在模板中去除这项，并重新生成。
+全站目前仍保留 `noindex,nofollow`。页面可通过链接访问，但不会主动请求搜索引擎收录；若以后决定开放索引，应在模板中统一调整并重新生成。
 
 HTML/CSS/JS 已可直接由 GitHub Pages 托管，`.nojekyll` 用于按静态文件提供。发布前确认仓库 Pages 指向的分支和目录；部署沿用仓库已有的 GitHub Pages 设置。
 
