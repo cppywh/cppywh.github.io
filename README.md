@@ -17,7 +17,7 @@ python -m http.server 8765 --bind 127.0.0.1
 ## 修改与重新生成
 
 - `tools/build_site.py`：网站页面模板、文章入口和三篇示例文章。
-- `research/medical-grpo/*.md`：真实项目记录的内容源；`tools/render_research_notes.py` 将其渲染为同目录 HTML。
+- `research/medical-grpo/README.md`：这一项目的唯一公开笔记；`tools/render_research_note.py` 将它渲染为单篇网页。旧章节网址会跳到文中对应位置。
 - `tools/requirements.txt`：渲染 Markdown 所需的 Python 依赖。
 - `assets/style.css`：浅色主题与移动端样式。
 - `assets/site.js`：分类、搜索、代码复制、目录高亮和阅读进度。
@@ -25,7 +25,7 @@ python -m http.server 8765 --bind 127.0.0.1
 - 三个 `*-notebook.html`：示例文章页。
 - `404.html`：GitHub Pages 错误页。
 
-修改模板或医学项目 Markdown 后，在仓库目录执行：
+修改模板或医学项目笔记后，在仓库目录执行：
 
 ```powershell
 python -m pip install -r tools/requirements.txt

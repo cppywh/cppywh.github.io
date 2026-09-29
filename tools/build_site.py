@@ -1,6 +1,6 @@
 from pathlib import Path
 from html import escape
-from render_research_notes import render_all
+from render_research_note import render_note
 
 ROOT = Path(__file__).resolve().parents[1]
 (ROOT / 'assets').mkdir(exist_ok=True)
@@ -51,7 +51,7 @@ for link in ['assets/favicon.svg','assets/style.css','assets/site.js','assets/th
     error_page = error_page.replace('"'+link+'"', '"/'+link+'"')
 (ROOT/'404.html').write_text(error_page,encoding='utf-8')
 (ROOT/'.nojekyll').touch()
-render_all(ROOT, shell, icon)
-print('Built the static site and public medical GRPO notes. No private notebook data imported.')
+render_note(ROOT, shell, icon)
+print('Built the static site and single medical GRPO note. No private notebook data imported.')
 
 
