@@ -1,12 +1,12 @@
 <!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta name="description" content="纯 GRPO 数学题实验：从 51/100 到 81/100"><meta name="robots" content="noindex,nofollow"><title>纯 GRPO 数学题实验：从 51/100 到 81/100 · iris 学习手记</title><link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml"><script src="../../assets/theme.js"></script><link rel="stylesheet" href="../../assets/style.css"><script src="../../assets/site.js" defer></script><link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css"><script defer src="../../assets/vendor/katex/katex.min.js"></script><script defer src="../../assets/math.js"></script></head>
 <body class="inner-page research-note"><div class="wallpaper-scene" aria-hidden="true"></div><a class="skip" href="#main">跳到正文</a><header class="site-header"><div class="header-inner"><a class="brand" href="../../index.html" aria-label="iris 学习手记首页"><span class="brand-symbol iris-mark" aria-hidden="true">✳</span><span>iris<span class="brand-sub"> / 学习手记</span></span></a><nav aria-label="主导航"><a href="../../index.html">首页</a><a href="../../notes.html" aria-current="page">学习手记</a><a href="../../about.html">关于</a></nav><a class="github" href="https://github.com/cppywh" target="_blank" rel="noopener noreferrer" aria-label="GitHub（新窗口）"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-4 1-4-2-6-2m12 5v-4c0-1 .2-2-1-3 4 0 7-2 7-6 0-1-1-3-1-3 0-1 0-3-1-4-2 0-3 1-4 2a12 12 0 0 0-6 0C8 3 6 2 4 2 3 3 3 5 4 6c0 0-1 2-1 3 0 4 3 6 7 6-1 1-1 2-1 3v4"/></svg></a></div></header>
-<main id="main"><div class="reading-progress" aria-hidden="true"></div><div class="page-wrap article-wrap"><a class="back-link" href="../../notes.html">← 返回学习手记</a><header class="article-header"><div class="eyebrow">GRPO / 02</div><h1>纯 GRPO 数学题实验：从 51/100 到 81/100</h1><p class="article-lead">500步纯GRPO，同题净增30个百分点；同时复盘截断、解析和条件准确率。</p><div class="post-meta"><span>iris</span><span>实验记录</span><span>基于公开汇总数据</span></div></header><div class="article-layout"><article class="prose"><h2 id="0. 核心原理：GRPO">0. 核心原理：GRPO</h2>
+<main id="main"><div class="reading-progress" aria-hidden="true"></div><div class="page-wrap article-wrap"><a class="back-link" href="../../notes.html">← 返回学习手记</a><header class="article-header"><div class="eyebrow">GRPO / 02</div><h1>纯 GRPO 数学题实验：从 51/100 到 81/100</h1><p class="article-lead">500步纯GRPO，同题净增30个百分点；同时复盘截断、解析和条件准确率。</p><div class="post-meta"><span>iris</span><span>实验记录</span><span>基于公开汇总数据</span></div></header><div class="article-layout"><article class="prose"><h2 id="核心原理：GRPO">核心原理：GRPO</h2>
 <p>PPO 类语言模型训练通常使用价值函数网络估计优势；GRPO 用同一题目采出的 G 个回复的组内奖励作为相对基线，省去单独训练的 Critic，但仍需为 G 次生成付出成本。</p>
 <p>对题目 q 采样 G 个回复，按标准答案计算 0/1 奖励。实现中会对组内奖励做中心化和缩放，再用带裁剪的策略目标更新模型。组内全对或全错时，正确性奖励没有相对差异，基本不能提供有效更新。此 notebook 额外设 beta=0.001，引入参考模型 KL 约束。</p>
 <p>完整数学公式推导与定义如下。</p>
 <hr />
-<h3 id="1. 组内相对优势计算（Group Relative Advantage）">1. 组内相对优势计算（Group Relative Advantage）</h3>
+<h3 id="组内相对优势计算（Group Relative Advantage）">组内相对优势计算（Group Relative Advantage）</h3>
 <p>对于给定的输入问题 <span class="math inline">q \sim P(Q)</span>，从当前旧策略 <span class="math inline">\pi_{\theta_{\text{old}}}</span> 中独立采样 <span class="math inline">G</span> 个候选回答：</p>
 <div class="math block">
 \{o_1, o_2, \dots, o_G\} \sim \pi_{\theta_{\text{old}}}(O \mid q)
@@ -28,14 +28,14 @@ A_i = \frac{r_i - \bar{r}}{\sigma_r + \epsilon_{\text{eps}}}
 当采样出的 <span class="math inline">G</span> 个回答全对（所有 <span class="math inline">r_i=1</span>）或全错（所有 <span class="math inline">r_i=0</span>）时，<span class="math inline">\sigma_r = 0</span>。加入极小常数 <span class="math inline">\epsilon_{\text{eps}}</span>（通常取 <span class="math inline">10^{-8}</span> 或 <span class="math inline">10^{-4}</span>）后，<span class="math inline">A_i \approx 0</span>。这意味着在无相对差异的样本组中，梯度贡献趋近于零。</p>
 </blockquote>
 <hr />
-<h3 id="2. Token 粒度概率比率（Probability Ratio）">2. Token 粒度概率比率（Probability Ratio）</h3>
+<h3 id="Token 粒度概率比率（Probability Ratio）">Token 粒度概率比率（Probability Ratio）</h3>
 <p>本质就是重要性采样，但是是token粒度，不是序列级。对于第 <span class="math inline">i</span> 个回答中的第 <span class="math inline">t</span> 个 Token <span class="math inline">o_{i,t}</span>，当前策略与采样所用旧策略的概率比率为：</p>
 <div class="math block">
 r_{i,t}(\theta) = \frac{\pi_\theta(o_{i,t} \mid q, o_{i,&lt;t})}{\pi_{\theta_{\text{old}}}(o_{i,t} \mid q, o_{i,&lt;t})}
 </div>
 <p>完整序列 <span class="math inline">o = (o_1, o_2, \dots, o_T)</span> 的严谨重要性采样权重应该是所有 Token 概率比率的累乘：$<span class="math inline">W_{\text{seq}}(\theta) = \frac{\pi_\theta(o \mid q)}{\pi_{\theta_{\text{old}}}(o \mid q)} = \prod_{t=1}^T \frac{\pi_\theta(o_t \mid q, o_{&lt;t})}{\pi_{\theta_{\text{old}}}(o_t \mid q, o_{&lt;t})} = \prod_{t=1}^T r_{i,t}(\theta)</span><span class="math inline">在长文本生成（数百至数千 Token）中，如果使用累乘</span>\prod_{t=1}^T r_{i,t}(\theta)$：只要策略发生微小漂移，连乘项就会发生严重的数值爆炸或消失（Variance Explosion），导致方差极大，训练崩溃。</p>
 <hr />
-<h3 id="3. GRPO 策略优化目标函数（Clipped Objective）">3. GRPO 策略优化目标函数（Clipped Objective）</h3>
+<h3 id="GRPO 策略优化目标函数（Clipped Objective）">GRPO 策略优化目标函数（Clipped Objective）</h3>
 <p>GRPO 最终优化的最大化目标函数 <span class="math inline">\mathcal{J}_{\text{GRPO}}(\theta)</span> 包含了带 PPO 裁剪机制的策略提升项，以及针对参考模型 <span class="math inline">\pi_{\text{ref}}</span> 的 KL 散度约束项：</p>
 <div class="math block">
 \mathcal{J}_{\text{GRPO}}(\theta) = \mathbb{E}_{\substack{q \sim P(Q) \\ \{o_i\}_{i=1}^G \sim \pi_{\theta_{\text{old}}}}} \left[ \frac{1}{G} \sum_{i=1}^G \frac{1}{\vert{}o_i\vert{}} \sum_{t=1}^{\vert{}o_i\vert{}} \left( \min \left( r_{i,t}(\theta) A_i, \, \text{clip}\left(r_{i,t}(\theta), 1-\epsilon, 1+\epsilon\right) A_i \right) - \beta D_{\text{KL}}(\pi_\theta \parallel \pi_{\text{ref}}) \right) \right]
@@ -47,7 +47,7 @@ r_{i,t}(\theta) = \frac{\pi_\theta(o_{i,t} \mid q, o_{i,&lt;t})}{\pi_{\theta_{\t
 <li><strong><span class="math inline">\vert{}o_i\vert{}</span></strong>：第 <span class="math inline">i</span> 个回答的序列长度（对长序列做平均归一化）。</li>
 </ul>
 <hr />
-<h3 id="4. KL 散度无偏/低方差估计器（KL Estimator）">4. KL 散度无偏/低方差估计器（KL Estimator）</h3>
+<h3 id="KL 散度无偏/低方差估计器（KL Estimator）">KL 散度无偏/低方差估计器（KL Estimator）</h3>
 <p>为了在采样生成的序列上高效计算逐 Token 的 KL 散度，DeepSeek-R1 实操中常用 <strong>Schulman 低方差无偏估计器</strong>：</p>
 <div class="math block">
 D_{\text{KL}}(\pi_\theta \parallel \pi_{\text{ref}}) = \frac{\pi_{\text{ref}}(o_{i,t} \mid q, o_{i,&lt;t})}{\pi_\theta(o_{i,t} \mid q, o_{i,&lt;t})} - \ln \frac{\pi_{\text{ref}}(o_{i,t} \mid q, o_{i,&lt;t})}{\pi_\theta(o_{i,t} \mid q, o_{i,&lt;t})} - 1
@@ -60,7 +60,7 @@ D_{\text{KL}}(\pi_\theta \parallel \pi_{\text{ref}}) = k - \ln k - 1
 <p>该估计器保证满足 <span class="math inline">D_{\text{KL}} \ge 0</span>，且极小化单样本估计时的方差。</p>
 </blockquote>
 <hr />
-<h3 id="5. 梯度更新公式展开">5. 梯度更新公式展开</h3>
+<h3 id="梯度更新公式展开">梯度更新公式展开</h3>
 <p>当概率比率 <span class="math inline">r_{i,t}(\theta)</span> 处于未裁剪区间 <span class="math inline">[1-\epsilon, 1+\epsilon]</span> 内时，忽略 KL 项，单个 Token 的参数梯度简化为：</p>
 <div class="math block">
 \nabla_\theta \mathcal{J}_{i,t}(\theta) = \nabla_\theta \ln \pi_\theta(o_{i,t} \mid q, o_{i,&lt;t}) \cdot A_i
@@ -71,7 +71,7 @@ D_{\text{KL}}(\pi_\theta \parallel \pi_{\text{ref}}) = k - \ln k - 1
 </ul>
 <p>本实验从已预训练的 Qwen3 Base 开始，不先进行本实验的 SFT，因此只是在小规模环境中学习 R1-Zero 式的可验证奖励训练流程，并非完整复现 DeepSeek-R1-Zero。</p>
 <p>这次我做了一个小型“R1-Zero”实验：从已经预训练的 <strong>Qwen3-1.7B-Base</strong> 出发，不先做本实验的 SFT，只用 GSM8K 最终数值的正确性奖励训练。重点是亲手跑通训练、看组内奖励和测试结果。</p>
-<h2 id="1. 最终结果">1. 最终结果</h2>
+<h2 id="最终结果">最终结果</h2>
 <p>训练完成500步，训练耗时 <strong>2039.68秒，约34分钟</strong>。最终在 GSM8K test 的前100题上重新评估四个模型：</p>
 <div class="table-wrap"><table>
 <thead>
@@ -126,7 +126,7 @@ D_{\text{KL}}(\pi_\theta \parallel \pi_{\text{ref}}) = k - \ln k - 1
 <p>图中使用全部100题作分母：GRPO 比 Base 多答对30题，其中35题由错变对、5题由对变错。</p>
 <p><strong>Base→GRPO 净增30个百分点。</strong> 同题逐项复算：35题从错变对，5题从对变错，其余60题正确性不变。分数不仅反映解题，也受到答案表达是否能被严格解析的影响：Base 明确可解析66题，GRPO 98题，因此不能把全部增益解释成新增数学知识。</p>
 <p>Instruct-Think 的结果尤其容易误读：44题碰到2048-token上限，剩余56题全部答对。排除触顶题后的100%是条件准确率，不是原100题准确率。</p>
-<h2 id="2. 训练到底做了什么">2. 训练到底做了什么</h2>
+<h2 id="训练到底做了什么">训练到底做了什么</h2>
 <p>流程很短：<strong>GSM8K train → 构造纯文本解题提示 → 每题采8个回答 → 最终数值0/1奖励 → GRPO更新 → 独立test评估</strong>。</p>
 <div class="table-wrap"><table>
 <thead>
@@ -194,7 +194,7 @@ D_{\text{KL}}(\pi_\theta \parallel \pi_{\text{ref}}) = k - \ln k - 1
 <li>前三个模型逐题推理；最后一个改batch=4（不然太慢了），逐批保存并支持续跑。批推理可能产生数值差异，这是比较的一个限制。</li>
 </ul>
 <p>本次评估统一使用贪心解码，而 Qwen3 官方建议思考模式使用采样，避免重复生成。因此，这组结果只能说明各模型在本次评估设置下的表现，不能说明 GRPO 模型整体优于原版 Qwen3 思考模型。参见<a href="https://huggingface.co/Qwen/Qwen3-1.7B">官方模型卡</a>。</p>
-<h2 id="3. 运行中踩过的坑">3. 运行中踩过的坑</h2>
+<h2 id="运行中踩过的坑">运行中踩过的坑</h2>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -230,9 +230,9 @@ D_{\text{KL}}(\pi_\theta \parallel \pi_{\text{ref}}) = k - \ln k - 1
 </tbody>
 </table></div>
 <p>保存采用 <code>save_only_model=True</code>，没有优化器和调度器状态。最终权重可以重新推理评估，但不是可精确续训的完整checkpoint。</p>
-<h2 id="4. 现在能说什么">4. 现在能说什么</h2>
+<h2 id="现在能说什么">现在能说什么</h2>
 <p>这次纯GRPO在固定100题、给定提示和生成预算的协议下，确实提高了可解析正确答案数。结果值得继续验证，但它是<strong>单次训练、测试集前100题</strong>，不是完整GSM8K分数，也不支持与官方benchmark排名比较。</p>
 <p>下一步优先做：完整test集评估；抽查不可解析与错题；对thinking参考模型另设采样协议和更充足预算；重复训练种子。先把评估证据补扎实，再考虑SFT→GRPO路线。</p>
-<h2 id="5. 代码与数据">5. 代码与数据</h2>
+<h2 id="代码与数据">代码与数据</h2>
 <p>项目代码、逐题输出、实际训练配置和日志见 <a href="https://github.com/cppywh/mini-deepseek-r1-zero">GitHub项目仓库</a>。模型权重只备份本地，不推到GitHub。文章中的100题指标由保存的逐题JSON复算；20题结果来自Notebook输出转录，未独立复算。</p>
-<p><a href="https://github.com/cppywh/cppywh.github.io/blob/main/research/mini-deepseek-r1-zero/README.md" target="_blank" rel="noopener noreferrer">在 GitHub 查看 Markdown 原文 ↗</a></p><div class="article-end"><span>— END —</span><p>记录到这里，下一步继续。</p></div></article><aside class="toc"><div class="toc-inner"><span class="eyebrow">本页目录</span><nav aria-label="文章目录"><a href="#0.%20%E6%A0%B8%E5%BF%83%E5%8E%9F%E7%90%86%EF%BC%9AGRPO"><span>01</span>0. 核心原理：GRPO</a><a href="#1.%20%E6%9C%80%E7%BB%88%E7%BB%93%E6%9E%9C"><span>02</span>1. 最终结果</a><a href="#2.%20%E8%AE%AD%E7%BB%83%E5%88%B0%E5%BA%95%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88"><span>03</span>2. 训练到底做了什么</a><a href="#%E4%BB%8E20%E9%A2%98%E5%88%B0100%E9%A2%98%EF%BC%9A%E5%85%88%E4%BF%AE%E8%AF%84%E4%BC%B0%EF%BC%8C%E5%86%8D%E8%A7%A3%E9%87%8A%E5%88%86%E6%95%B0"><span>04</span>从20题到100题：先修评估，再解释分数</a><a href="#3.%20%E8%BF%90%E8%A1%8C%E4%B8%AD%E8%B8%A9%E8%BF%87%E7%9A%84%E5%9D%91"><span>05</span>3. 运行中踩过的坑</a><a href="#4.%20%E7%8E%B0%E5%9C%A8%E8%83%BD%E8%AF%B4%E4%BB%80%E4%B9%88"><span>06</span>4. 现在能说什么</a><a href="#5.%20%E4%BB%A3%E7%A0%81%E4%B8%8E%E6%95%B0%E6%8D%AE"><span>07</span>5. 代码与数据</a></nav><a class="back-top" href="#main">↑ 回到顶部</a></div></aside></div></div></main><footer class="site-footer"><div><a class="footer-name" href="../../index.html">iris / 学习手记</a><p>把实验做一遍，把理解写下来。</p></div><div class="footer-right"><span><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg> 保持好奇，慢慢生长。</span><small>实验与学习记录 · <a data-wallpaper-source href="https://wallhaven.cc/w/6kqzl6" target="_blank" rel="noopener noreferrer">壁纸来源 ↗</a></small></div></footer><div class="toast" role="status" aria-live="polite"></div></body></html>
+<p><a href="https://github.com/cppywh/cppywh.github.io/blob/main/research/mini-deepseek-r1-zero/README.md" target="_blank" rel="noopener noreferrer">在 GitHub 查看 Markdown 原文 ↗</a></p><div class="article-end"><span>— END —</span><p>记录到这里，下一步继续。</p></div></article><aside class="toc"><div class="toc-inner"><span class="eyebrow">本页目录</span><nav aria-label="文章目录"><a href="#%E6%A0%B8%E5%BF%83%E5%8E%9F%E7%90%86%EF%BC%9AGRPO"><span>01</span>核心原理：GRPO</a><a href="#%E6%9C%80%E7%BB%88%E7%BB%93%E6%9E%9C"><span>02</span>最终结果</a><a href="#%E8%AE%AD%E7%BB%83%E5%88%B0%E5%BA%95%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88"><span>03</span>训练到底做了什么</a><a href="#%E4%BB%8E20%E9%A2%98%E5%88%B0100%E9%A2%98%EF%BC%9A%E5%85%88%E4%BF%AE%E8%AF%84%E4%BC%B0%EF%BC%8C%E5%86%8D%E8%A7%A3%E9%87%8A%E5%88%86%E6%95%B0"><span>04</span>从20题到100题：先修评估，再解释分数</a><a href="#%E8%BF%90%E8%A1%8C%E4%B8%AD%E8%B8%A9%E8%BF%87%E7%9A%84%E5%9D%91"><span>05</span>运行中踩过的坑</a><a href="#%E7%8E%B0%E5%9C%A8%E8%83%BD%E8%AF%B4%E4%BB%80%E4%B9%88"><span>06</span>现在能说什么</a><a href="#%E4%BB%A3%E7%A0%81%E4%B8%8E%E6%95%B0%E6%8D%AE"><span>07</span>代码与数据</a></nav><a class="back-top" href="#main">↑ 回到顶部</a></div></aside></div></div></main><footer class="site-footer"><div><a class="footer-name" href="../../index.html">iris / 学习手记</a><p>把实验做一遍，把理解写下来。</p></div><div class="footer-right"><span><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg> 保持好奇，慢慢生长。</span><small>实验与学习记录 · <a data-wallpaper-source href="https://wallhaven.cc/w/6kqzl6" target="_blank" rel="noopener noreferrer">壁纸来源 ↗</a></small></div></footer><div class="toast" role="status" aria-live="polite"></div></body></html>

@@ -1,6 +1,6 @@
 # 纯 GRPO 数学题实验：从 51/100 到 81/100
 
-## 0. 核心原理：GRPO
+## 核心原理：GRPO
 
 PPO 类语言模型训练通常使用价值函数网络估计优势；GRPO 用同一题目采出的 G 个回复的组内奖励作为相对基线，省去单独训练的 Critic，但仍需为 G 次生成付出成本。
 
@@ -10,7 +10,7 @@ PPO 类语言模型训练通常使用价值函数网络估计优势；GRPO 用�
 
 ---
 
-### 1. 组内相对优势计算（Group Relative Advantage）
+### 组内相对优势计算（Group Relative Advantage）
 
 对于给定的输入问题 $q \sim P(Q)$，从当前旧策略 $\pi_{\theta_{\text{old}}}$ 中独立采样 $G$ 个候选回答：
 
@@ -36,7 +36,7 @@ $$A_i = \frac{r_i - \bar{r}}{\sigma_r + \epsilon_{\text{eps}}}$$
 
 ---
 
-### 2. Token 粒度概率比率（Probability Ratio）
+### Token 粒度概率比率（Probability Ratio）
 
 本质就是重要性采样，但是是token粒度，不是序列级。对于第 $i$ 个回答中的第 $t$ 个 Token $o_{i,t}$，当前策略与采样所用旧策略的概率比率为：
 
@@ -48,7 +48,7 @@ $$r_{i,t}(\theta) = \frac{\pi_\theta(o_{i,t} \mid q, o_{i,<t})}{\pi_{\theta_{\te
 
 ---
 
-### 3. GRPO 策略优化目标函数（Clipped Objective）
+### GRPO 策略优化目标函数（Clipped Objective）
 
 GRPO 最终优化的最大化目标函数 $\mathcal{J}_{\text{GRPO}}(\theta)$ 包含了带 PPO 裁剪机制的策略提升项，以及针对参考模型 $\pi_{\text{ref}}$ 的 KL 散度约束项：
 
@@ -62,7 +62,7 @@ $$\mathcal{J}_{\text{GRPO}}(\theta) = \mathbb{E}_{\substack{q \sim P(Q) \\ \{o_i
 
 ---
 
-### 4. KL 散度无偏/低方差估计器（KL Estimator）
+### KL 散度无偏/低方差估计器（KL Estimator）
 
 为了在采样生成的序列上高效计算逐 Token 的 KL 散度，DeepSeek-R1 实操中常用 **Schulman 低方差无偏估计器**：
 
@@ -77,7 +77,7 @@ $$D_{\text{KL}}(\pi_\theta \parallel \pi_{\text{ref}}) = k - \ln k - 1$$
 
 ---
 
-### 5. 梯度更新公式展开
+### 梯度更新公式展开
 
 当概率比率 $r_{i,t}(\theta)$ 处于未裁剪区间 $[1-\epsilon, 1+\epsilon]$ 内时，忽略 KL 项，单个 Token 的参数梯度简化为：
 
@@ -89,7 +89,7 @@ $$\nabla_\theta \mathcal{J}_{i,t}(\theta) = \nabla_\theta \ln \pi_\theta(o_{i,t}
 本实验从已预训练的 Qwen3 Base 开始，不先进行本实验的 SFT，因此只是在小规模环境中学习 R1-Zero 式的可验证奖励训练流程，并非完整复现 DeepSeek-R1-Zero。
 
 这次我做了一个小型“R1-Zero”实验：从已经预训练的 **Qwen3-1.7B-Base** 出发，不先做本实验的 SFT，只用 GSM8K 最终数值的正确性奖励训练。重点是亲手跑通训练、看组内奖励和测试结果。
-## 1. 最终结果
+## 最终结果
 
 训练完成500步，训练耗时 **2039.68秒，约34分钟**。最终在 GSM8K test 的前100题上重新评估四个模型：
 
@@ -114,7 +114,7 @@ $$\nabla_\theta \mathcal{J}_{i,t}(\theta) = \nabla_\theta \ln \pi_\theta(o_{i,t}
 
 Instruct-Think 的结果尤其容易误读：44题碰到2048-token上限，剩余56题全部答对。排除触顶题后的100%是条件准确率，不是原100题准确率。
 
-## 2. 训练到底做了什么
+## 训练到底做了什么
 
 流程很短：**GSM8K train → 构造纯文本解题提示 → 每题采8个回答 → 最终数值0/1奖励 → GRPO更新 → 独立test评估**。
 
@@ -154,7 +154,7 @@ Instruct-Think 的结果尤其容易误读：44题碰到2048-token上限，剩�
 
 本次评估统一使用贪心解码，而 Qwen3 官方建议思考模式使用采样，避免重复生成。因此，这组结果只能说明各模型在本次评估设置下的表现，不能说明 GRPO 模型整体优于原版 Qwen3 思考模型。参见[官方模型卡](https://huggingface.co/Qwen/Qwen3-1.7B)。
 
-## 3. 运行中踩过的坑
+## 运行中踩过的坑
 
 | 问题 | 实际处理与边界 |
 |---|---|
@@ -167,13 +167,13 @@ Instruct-Think 的结果尤其容易误读：44题碰到2048-token上限，剩�
 
 保存采用 `save_only_model=True`，没有优化器和调度器状态。最终权重可以重新推理评估，但不是可精确续训的完整checkpoint。
 
-## 4. 现在能说什么
+## 现在能说什么
 
 这次纯GRPO在固定100题、给定提示和生成预算的协议下，确实提高了可解析正确答案数。结果值得继续验证，但它是**单次训练、测试集前100题**，不是完整GSM8K分数，也不支持与官方benchmark排名比较。
 
 下一步优先做：完整test集评估；抽查不可解析与错题；对thinking参考模型另设采样协议和更充足预算；重复训练种子。先把评估证据补扎实，再考虑SFT→GRPO路线。
 
-## 5. 代码与数据
+## 代码与数据
 
 项目代码、逐题输出、实际训练配置和日志见 [GitHub项目仓库](https://github.com/cppywh/mini-deepseek-r1-zero)。模型权重只备份本地，不推到GitHub。文章中的100题指标由保存的逐题JSON复算；20题结果来自Notebook输出转录，未独立复算。
 
