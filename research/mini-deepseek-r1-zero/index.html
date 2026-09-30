@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta name="description" content="纯 GRPO 数学题实验：从 51/100 到 81/100"><meta name="robots" content="noindex,nofollow"><title>纯 GRPO 数学题实验：从 51/100 到 81/100 · iris 学习手记</title><link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml"><script src="../../assets/theme.js"></script><link rel="stylesheet" href="../../assets/style.css"><script src="../../assets/site.js" defer></script></head>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta name="description" content="纯 GRPO 数学题实验：从 51/100 到 81/100"><meta name="robots" content="noindex,nofollow"><title>纯 GRPO 数学题实验：从 51/100 到 81/100 · iris 学习手记</title><link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml"><script src="../../assets/theme.js"></script><link rel="stylesheet" href="../../assets/style.css"><script src="../../assets/site.js" defer></script><link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css"><script defer src="../../assets/vendor/katex/katex.min.js"></script><script defer src="../../assets/math.js"></script></head>
 <body class="inner-page research-note"><div class="wallpaper-scene" aria-hidden="true"></div><a class="skip" href="#main">跳到正文</a><header class="site-header"><div class="header-inner"><a class="brand" href="../../index.html" aria-label="iris 学习手记首页"><span class="brand-symbol iris-mark" aria-hidden="true">✳</span><span>iris<span class="brand-sub"> / 学习手记</span></span></a><nav aria-label="主导航"><a href="../../index.html">首页</a><a href="../../notes.html" aria-current="page">学习手记</a><a href="../../about.html">关于</a></nav><a class="github" href="https://github.com/cppywh" target="_blank" rel="noopener noreferrer" aria-label="GitHub（新窗口）"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-4 1-4-2-6-2m12 5v-4c0-1 .2-2-1-3 4 0 7-2 7-6 0-1-1-3-1-3 0-1 0-3-1-4-2 0-3 1-4 2a12 12 0 0 0-6 0C8 3 6 2 4 2 3 3 3 5 4 6c0 0-1 2-1 3 0 4 3 6 7 6-1 1-1 2-1 3v4"/></svg></a></div></header>
 <main id="main"><div class="reading-progress" aria-hidden="true"></div><div class="page-wrap article-wrap"><a class="back-link" href="../../notes.html">← 返回学习手记</a><header class="article-header"><div class="eyebrow">GRPO / 02</div><h1>纯 GRPO 数学题实验：从 51/100 到 81/100</h1><p class="article-lead">500步纯GRPO，同题净增30个百分点；同时复盘截断、解析和条件准确率。</p><div class="post-meta"><span>iris</span><span>实验记录</span><span>基于公开汇总数据</span></div></header><div class="article-layout"><article class="prose"><h2 id="0. 核心原理：GRPO">0. 核心原理：GRPO</h2>
 <p>PPO 类语言模型训练通常使用价值函数网络估计优势；GRPO 用同一题目采出的 G 个回复的组内奖励作为相对基线，省去单独训练的 Critic，但仍需为 G 次生成付出成本。</p>
@@ -7,50 +7,67 @@
 <p>完整数学公式推导与定义如下。</p>
 <hr />
 <h3 id="1. 组内相对优势计算（Group Relative Advantage）">1. 组内相对优势计算（Group Relative Advantage）</h3>
-<p>对于给定的输入问题 $q \sim P(Q)$，从当前旧策略 $\pi_{\theta_{\text{old}}}$ 中独立采样 $G$ 个候选回答：</p>
-<p>$${o_1, o_2, \dots, o_G} \sim \pi_{\theta_{\text{old}}}(O \mid q)$$</p>
-<p>每个回答 $o_i$ 经由标量奖励函数计算得到奖励 $r_i$（如可验证规则输出的 0 或 1）。</p>
-<p>计算这 $G$ 个奖励的组内均值 $\bar{r}$ 和组内标准差 $\sigma_r$：</p>
-<p>$$\bar{r} = \frac{1}{G} \sum_{j=1}^G r_j$$</p>
-<p>$$\sigma_r = \sqrt{\frac{1}{G} \sum_{j=1}^G (r_j - \bar{r})^2}$$</p>
-<p>第 $i$ 个回答的<strong>组内相对优势（Group Relative Advantage）</strong> $A_i$ 定义为：</p>
-<p>$$A_i = \frac{r_i - \bar{r}}{\sigma_r + \epsilon_{\text{eps}}}$$</p>
+<p>对于给定的输入问题 <span class="math inline">q \sim P(Q)</span>，从当前旧策略 <span class="math inline">\pi_{\theta_{\text{old}}}</span> 中独立采样 <span class="math inline">G</span> 个候选回答：</p>
+<div class="math block">
+\{o_1, o_2, \dots, o_G\} \sim \pi_{\theta_{\text{old}}}(O \mid q)
+</div>
+<p>每个回答 <span class="math inline">o_i</span> 经由标量奖励函数计算得到奖励 <span class="math inline">r_i</span>（如可验证规则输出的 0 或 1）。</p>
+<p>计算这 <span class="math inline">G</span> 个奖励的组内均值 <span class="math inline">\bar{r}</span> 和组内标准差 <span class="math inline">\sigma_r</span>：</p>
+<div class="math block">
+\bar{r} = \frac{1}{G} \sum_{j=1}^G r_j
+</div>
+<div class="math block">
+\sigma_r = \sqrt{\frac{1}{G} \sum_{j=1}^G (r_j - \bar{r})^2}
+</div>
+<p>第 <span class="math inline">i</span> 个回答的<strong>组内相对优势（Group Relative Advantage）</strong> <span class="math inline">A_i</span> 定义为：</p>
+<div class="math block">
+A_i = \frac{r_i - \bar{r}}{\sigma_r + \epsilon_{\text{eps}}}
+</div>
 <blockquote>
 <p><strong>数值边界（全对/全错情况）：</strong>
-当采样出的 $G$ 个回答全对（所有 $r_i=1$）或全错（所有 $r_i=0$）时，$\sigma_r = 0$。加入极小常数 $\epsilon_{\text{eps}}$（通常取 $10^{-8}$ 或 $10^{-4}$）后，$A_i \approx 0$。这意味着在无相对差异的样本组中，梯度贡献趋近于零。</p>
+当采样出的 <span class="math inline">G</span> 个回答全对（所有 <span class="math inline">r_i=1</span>）或全错（所有 <span class="math inline">r_i=0</span>）时，<span class="math inline">\sigma_r = 0</span>。加入极小常数 <span class="math inline">\epsilon_{\text{eps}}</span>（通常取 <span class="math inline">10^{-8}</span> 或 <span class="math inline">10^{-4}</span>）后，<span class="math inline">A_i \approx 0</span>。这意味着在无相对差异的样本组中，梯度贡献趋近于零。</p>
 </blockquote>
 <hr />
 <h3 id="2. Token 粒度概率比率（Probability Ratio）">2. Token 粒度概率比率（Probability Ratio）</h3>
-<p>本质就是重要性采样，但是是token粒度，不是序列级。对于第 $i$ 个回答中的第 $t$ 个 Token $o_{i,t}$，当前策略与采样所用旧策略的概率比率为：</p>
-<p>$$r_{i,t}(\theta) = \frac{\pi_\theta(o_{i,t} \mid q, o_{i,&lt;t})}{\pi_{\theta_{\text{old}}}(o_{i,t} \mid q, o_{i,&lt;t})}$$</p>
-<p>完整序列 $o = (o_1, o_2, \dots, o_T)$ 的严谨重要性采样权重应该是所有 Token 概率比率的累乘：$$W_{\text{seq}}(\theta) = \frac{\pi_\theta(o \mid q)}{\pi_{\theta_{\text{old}}}(o \mid q)} = \prod_{t=1}^T \frac{\pi_\theta(o_t \mid q, o_{&lt;t})}{\pi_{\theta_{\text{old}}}(o_t \mid q, o_{&lt;t})} = \prod_{t=1}^T r_{i,t}(\theta)$$
-在长文本生成（数百至数千 Token）中，如果使用累乘 $\prod_{t=1}^T r_{i,t}(\theta)$：只要策略发生微小漂移，连乘项就会发生严重的数值爆炸或消失（Variance Explosion），导致方差极大，训练崩溃。</p>
+<p>本质就是重要性采样，但是是token粒度，不是序列级。对于第 <span class="math inline">i</span> 个回答中的第 <span class="math inline">t</span> 个 Token <span class="math inline">o_{i,t}</span>，当前策略与采样所用旧策略的概率比率为：</p>
+<div class="math block">
+r_{i,t}(\theta) = \frac{\pi_\theta(o_{i,t} \mid q, o_{i,&lt;t})}{\pi_{\theta_{\text{old}}}(o_{i,t} \mid q, o_{i,&lt;t})}
+</div>
+<p>完整序列 <span class="math inline">o = (o_1, o_2, \dots, o_T)</span> 的严谨重要性采样权重应该是所有 Token 概率比率的累乘：$<span class="math inline">W_{\text{seq}}(\theta) = \frac{\pi_\theta(o \mid q)}{\pi_{\theta_{\text{old}}}(o \mid q)} = \prod_{t=1}^T \frac{\pi_\theta(o_t \mid q, o_{&lt;t})}{\pi_{\theta_{\text{old}}}(o_t \mid q, o_{&lt;t})} = \prod_{t=1}^T r_{i,t}(\theta)</span><span class="math inline">在长文本生成（数百至数千 Token）中，如果使用累乘</span>\prod_{t=1}^T r_{i,t}(\theta)$：只要策略发生微小漂移，连乘项就会发生严重的数值爆炸或消失（Variance Explosion），导致方差极大，训练崩溃。</p>
 <hr />
 <h3 id="3. GRPO 策略优化目标函数（Clipped Objective）">3. GRPO 策略优化目标函数（Clipped Objective）</h3>
-<p>GRPO 最终优化的最大化目标函数 $\mathcal{J}<em>{\text{GRPO}}(\theta)$ 包含了带 PPO 裁剪机制的策略提升项，以及针对参考模型 $\pi</em>{\text{ref}}$ 的 KL 散度约束项：</p>
-<p>$$\mathcal{J}<em>{\text{GRPO}}(\theta) = \mathbb{E}</em>{\substack{q \sim P(Q) \ {o_i}<em>{i=1}^G \sim \pi</em>{\theta_{\text{old}}}}} \left[ \frac{1}{G} \sum_{i=1}^G \frac{1}{\vert{}o_i\vert{}} \sum_{t=1}^{\vert{}o_i\vert{}} \left( \min \left( r_{i,t}(\theta) A_i, , \text{clip}\left(r_{i,t}(\theta), 1-\epsilon, 1+\epsilon\right) A_i \right) - \beta D_{\text{KL}}(\pi_\theta \parallel \pi_{\text{ref}}) \right) \right]$$</p>
+<p>GRPO 最终优化的最大化目标函数 <span class="math inline">\mathcal{J}_{\text{GRPO}}(\theta)</span> 包含了带 PPO 裁剪机制的策略提升项，以及针对参考模型 <span class="math inline">\pi_{\text{ref}}</span> 的 KL 散度约束项：</p>
+<div class="math block">
+\mathcal{J}_{\text{GRPO}}(\theta) = \mathbb{E}_{\substack{q \sim P(Q) \\ \{o_i\}_{i=1}^G \sim \pi_{\theta_{\text{old}}}}} \left[ \frac{1}{G} \sum_{i=1}^G \frac{1}{\vert{}o_i\vert{}} \sum_{t=1}^{\vert{}o_i\vert{}} \left( \min \left( r_{i,t}(\theta) A_i, \, \text{clip}\left(r_{i,t}(\theta), 1-\epsilon, 1+\epsilon\right) A_i \right) - \beta D_{\text{KL}}(\pi_\theta \parallel \pi_{\text{ref}}) \right) \right]
+</div>
 <p>其中：</p>
 <ul>
-<li><strong>$\epsilon$</strong>：PPO 裁剪范围超参数（通常设为 $0.1$ 或 $0.2$）。</li>
-<li><strong>$\beta$</strong>：KL 惩罚系数（对应你代码设置中的 $\beta = 0.001$）。</li>
-<li><strong>$\vert{}o_i\vert{}$</strong>：第 $i$ 个回答的序列长度（对长序列做平均归一化）。</li>
+<li><strong><span class="math inline">\epsilon</span></strong>：PPO 裁剪范围超参数（通常设为 <span class="math inline">0.1</span> 或 <span class="math inline">0.2</span>）。</li>
+<li><strong><span class="math inline">\beta</span></strong>：KL 惩罚系数（对应你代码设置中的 <span class="math inline">\beta = 0.001</span>）。</li>
+<li><strong><span class="math inline">\vert{}o_i\vert{}</span></strong>：第 <span class="math inline">i</span> 个回答的序列长度（对长序列做平均归一化）。</li>
 </ul>
 <hr />
 <h3 id="4. KL 散度无偏/低方差估计器（KL Estimator）">4. KL 散度无偏/低方差估计器（KL Estimator）</h3>
 <p>为了在采样生成的序列上高效计算逐 Token 的 KL 散度，DeepSeek-R1 实操中常用 <strong>Schulman 低方差无偏估计器</strong>：</p>
-<p>$$D_{\text{KL}}(\pi_\theta \parallel \pi_{\text{ref}}) = \frac{\pi_{\text{ref}}(o_{i,t} \mid q, o_{i,&lt;t})}{\pi_\theta(o_{i,t} \mid q, o_{i,&lt;t})} - \ln \frac{\pi_{\text{ref}}(o_{i,t} \mid q, o_{i,&lt;t})}{\pi_\theta(o_{i,t} \mid q, o_{i,&lt;t})} - 1$$</p>
-<p>若令 $k = \frac{\pi_{\text{ref}}(o_{i,t} \mid q, o_{i,&lt;t})}{\pi_\theta(o_{i,t} \mid q, o_{i,&lt;t})}$，上式可简写为：</p>
-<p>$$D_{\text{KL}}(\pi_\theta \parallel \pi_{\text{ref}}) = k - \ln k - 1$$</p>
+<div class="math block">
+D_{\text{KL}}(\pi_\theta \parallel \pi_{\text{ref}}) = \frac{\pi_{\text{ref}}(o_{i,t} \mid q, o_{i,&lt;t})}{\pi_\theta(o_{i,t} \mid q, o_{i,&lt;t})} - \ln \frac{\pi_{\text{ref}}(o_{i,t} \mid q, o_{i,&lt;t})}{\pi_\theta(o_{i,t} \mid q, o_{i,&lt;t})} - 1
+</div>
+<p>若令 <span class="math inline">k = \frac{\pi_{\text{ref}}(o_{i,t} \mid q, o_{i,&lt;t})}{\pi_\theta(o_{i,t} \mid q, o_{i,&lt;t})}</span>，上式可简写为：</p>
+<div class="math block">
+D_{\text{KL}}(\pi_\theta \parallel \pi_{\text{ref}}) = k - \ln k - 1
+</div>
 <blockquote>
-<p>该估计器保证满足 $D_{\text{KL}} \ge 0$，且极小化单样本估计时的方差。</p>
+<p>该估计器保证满足 <span class="math inline">D_{\text{KL}} \ge 0</span>，且极小化单样本估计时的方差。</p>
 </blockquote>
 <hr />
 <h3 id="5. 梯度更新公式展开">5. 梯度更新公式展开</h3>
-<p>当概率比率 $r_{i,t}(\theta)$ 处于未裁剪区间 $[1-\epsilon, 1+\epsilon]$ 内时，忽略 KL 项，单个 Token 的参数梯度简化为：</p>
-<p>$$\nabla_\theta \mathcal{J}<em>{i,t}(\theta) = \nabla</em>\theta \ln \pi_\theta(o_{i,t} \mid q, o_{i,&lt;t}) \cdot A_i$$</p>
+<p>当概率比率 <span class="math inline">r_{i,t}(\theta)</span> 处于未裁剪区间 <span class="math inline">[1-\epsilon, 1+\epsilon]</span> 内时，忽略 KL 项，单个 Token 的参数梯度简化为：</p>
+<div class="math block">
+\nabla_\theta \mathcal{J}_{i,t}(\theta) = \nabla_\theta \ln \pi_\theta(o_{i,t} \mid q, o_{i,&lt;t}) \cdot A_i
+</div>
 <ul>
-<li><strong>当 $A_i &gt; 0$（表现优于组内平均水平）：</strong> 增大生成该 Token 的对数概率。</li>
-<li><strong>当 $A_i &lt; 0$（表现劣于组内平均水平）：</strong> 降低生成该 Token 的对数概率。</li>
+<li><strong>当 <span class="math inline">A_i &gt; 0</span>（表现优于组内平均水平）：</strong> 增大生成该 Token 的对数概率。</li>
+<li><strong>当 <span class="math inline">A_i &lt; 0</span>（表现劣于组内平均水平）：</strong> 降低生成该 Token 的对数概率。</li>
 </ul>
 <p>本实验从已预训练的 Qwen3 Base 开始，不先进行本实验的 SFT，因此只是在小规模环境中学习 R1-Zero 式的可验证奖励训练流程，并非完整复现 DeepSeek-R1-Zero。</p>
 <p>这次我做了一个小型“R1-Zero”实验：从已经预训练的 <strong>Qwen3-1.7B-Base</strong> 出发，不先做本实验的 SFT，只用 GSM8K 最终数值的正确性奖励训练。重点是亲手跑通训练、看组内奖励和测试结果。</p>
@@ -103,6 +120,7 @@
 </tbody>
 </table></div>
 <p><img src="assets/accuracy.svg" alt="全题准确率与触顶数" /></p>
+<p><img src="assets/four-model-accuracy.png" alt="四个模型的全题正确率对比" /></p>
 <p><img src="assets/correctness-comparison.png" alt="Base 与 GRPO 的正确率及逐题变化" /></p>
 <p>图中使用全部100题作分母：GRPO 比 Base 多答对30题，其中35题由错变对、5题由对变错。</p>
 <p><strong>Base→GRPO 净增30个百分点。</strong> 同题逐项复算：35题从错变对，5题从对变错，其余60题正确性不变。分数不仅反映解题，也受到答案表达是否能被严格解析的影响：Base 明确可解析66题，GRPO 98题，因此不能把全部增益解释成新增数学知识。</p>

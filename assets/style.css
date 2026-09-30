@@ -108,3 +108,8 @@ body{isolation:isolate}
 .research-note .prose pre{margin:22px 0;background:var(--blue-soft);border-radius:5px;white-space:pre;overflow-x:auto}
 .research-note .prose a{text-decoration:underline;text-decoration-color:#aebfbd;text-underline-offset:3px}
 .research-note .prose .table-wrap{max-width:100%;overflow-x:auto}
+
+/* 公式超出窄屏时横向滚动，避免撑破文章布局。 */
+.prose .math.block { overflow-x: auto; padding: .6rem 0; }
+.prose .math.block .katex-display { margin: .5rem 0; }
+.prose .math.inline { font-size: .95em; }

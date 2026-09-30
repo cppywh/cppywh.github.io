@@ -8,6 +8,7 @@ from pathlib import Path
 from urllib.parse import quote
 
 from markdown_it import MarkdownIt
+from mdit_py_plugins.dollarmath import dollarmath_plugin
 
 
 SECTION_REDIRECTS = {
@@ -30,7 +31,7 @@ def render_note(root: Path, shell, icon, slug="medical-grpo", eyebrow="MEDICAL G
         flags=re.DOTALL,
     )
 
-    md = MarkdownIt("commonmark", {"html": False}).enable("table")
+    md = MarkdownIt("commonmark", {"html": False}).enable("table").use(dollarmath_plugin)
     tokens = md.parse(content)
     if tokens and tokens[0].type == "heading_open" and tokens[0].tag == "h1":
         tokens = tokens[3:]
@@ -84,6 +85,11 @@ def render_note(root: Path, shell, icon, slug="medical-grpo", eyebrow="MEDICAL G
         "assets/style.css", "assets/theme.js", "assets/site.js",
     ):
         page = page.replace(f'"{path}"', f'"../../{path}"')
+    if any(token.type.startswith("math") or any(child.type.startswith("math") for child in (token.children or [])) for token in tokens):
+        math_assets = ('<link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">'
+                       '<script defer src="../../assets/vendor/katex/katex.min.js"></script>'
+                       '<script defer src="../../assets/math.js"></script>')
+        page = page.replace("</head>", math_assets + "</head>", 1)
     page = page.replace('class="inner-page"', 'class="inner-page research-note"', 1)
     (folder / "index.html").write_text(page.replace("@@ARTICLE@@", body), encoding="utf-8")
 

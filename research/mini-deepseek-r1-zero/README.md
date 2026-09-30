@@ -102,6 +102,8 @@ $$\nabla_\theta \mathcal{J}_{i,t}(\theta) = \nabla_\theta \ln \pi_\theta(o_{i,t}
 
 ![全题准确率与触顶数](assets/accuracy.svg)
 
+![四个模型的全题正确率对比](assets/four-model-accuracy.png)
+
 ![Base 与 GRPO 的正确率及逐题变化](assets/correctness-comparison.png)
 
 图中使用全部100题作分母：GRPO 比 Base 多答对30题，其中35题由错变对、5题由对变错。
