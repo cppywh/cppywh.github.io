@@ -102,7 +102,9 @@ $$\nabla_\theta \mathcal{J}_{i,t}(\theta) = \nabla_\theta \ln \pi_\theta(o_{i,t}
 
 ![全题准确率与触顶数](assets/accuracy.svg)
 
-![四个模型的全题正确率对比](assets/four-model-accuracy.png)
+![四个模型排除触顶题后的正确率对比](assets/four-model-accuracy.png)
+
+四模型图按未触顶题计算：Base 51/99（51.52%）、GRPO 81/100（81%）、Distill 60/100（60%）、Instruct-Think 56/56（100%）。排除题数分别为1、0、0、44；各模型计分题集不同。
 
 ![Base 与 GRPO 的正确率及逐题变化](assets/correctness-comparison.png)
 

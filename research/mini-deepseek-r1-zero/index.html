@@ -120,7 +120,8 @@ D_{\text{KL}}(\pi_\theta \parallel \pi_{\text{ref}}) = k - \ln k - 1
 </tbody>
 </table></div>
 <p><img src="assets/accuracy.svg" alt="全题准确率与触顶数" /></p>
-<p><img src="assets/four-model-accuracy.png" alt="四个模型的全题正确率对比" /></p>
+<p><img src="assets/four-model-accuracy.png" alt="四个模型排除触顶题后的正确率对比" /></p>
+<p>四模型图按未触顶题计算：Base 51/99（51.52%）、GRPO 81/100（81%）、Distill 60/100（60%）、Instruct-Think 56/56（100%）。排除题数分别为1、0、0、44；各模型计分题集不同。</p>
 <p><img src="assets/correctness-comparison.png" alt="Base 与 GRPO 的正确率及逐题变化" /></p>
 <p>图中使用全部100题作分母：GRPO 比 Base 多答对30题，其中35题由错变对、5题由对变错。</p>
 <p><strong>Base→GRPO 净增30个百分点。</strong> 同题逐项复算：35题从错变对，5题从对变错，其余60题正确性不变。分数不仅反映解题，也受到答案表达是否能被严格解析的影响：Base 明确可解析66题，GRPO 98题，因此不能把全部增益解释成新增数学知识。</p>
