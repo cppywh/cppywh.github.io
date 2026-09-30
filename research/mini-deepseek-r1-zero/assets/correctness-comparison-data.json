@@ -1,0 +1,10 @@
+{
+  "source": "100-question strict-v2 per-question evaluation",
+  "total": 100,
+  "base_correct": 51,
+  "grpo_correct": 81,
+  "both_correct": 46,
+  "wrong_to_right": 35,
+  "right_to_wrong": 5,
+  "both_wrong": 14
+}
