@@ -80,6 +80,6 @@ Qwen3模型卡的thinking模式建议采用采样，并提醒贪心解码可能�
 
 ## 代码与数据
 
-项目代码、逐题输出、实际训练配置和日志将在专用GitHub项目中公开。模型权重只备份本地，不推到GitHub。文章中的100题指标由保存的逐题JSON复算；20题结果来自Notebook输出转录，未独立复算。
+项目代码、逐题输出、实际训练配置和日志见 [GitHub项目仓库](https://github.com/cppywh/mini-deepseek-r1-zero)。模型权重只备份本地，不推到GitHub。文章中的100题指标由保存的逐题JSON复算；20题结果来自Notebook输出转录，未独立复算。
 
 课程来源：[第4课实验：迷你DeepSeek-R1-Zero](https://posttrain.gaozhijun.me/docs/lecture-4/lab/)。数据来源：[openai/gsm8k](https://huggingface.co/datasets/openai/gsm8k)。
