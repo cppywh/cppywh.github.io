@@ -23,7 +23,7 @@ posts = [
 ]
 
 featured = {'href':'research/medical-grpo/','type':'实验记录','no':'01','title':'中文医考小模型后训练：从格式学会到答题改进','desc':'从三奖励 GRPO、扩大 SFT 到直接 GRPO 与 DAPO 对照：保留失败结果，用同题数据看变化。','tags':['大模型后训练','GRPO','实验记录'],'time':'项目实录','status':'真实记录'}
-grpo_featured = {'href':'research/mini-deepseek-r1-zero/','type':'实验记录','no':'02','title':'纯 GRPO 数学题实验：从 51/100 到 81/100，评估口径也踩了坑','desc':'Qwen3-1.7B-Base 的500步GRPO：同题改对35题、改错5题，保留思考模型44题触顶的评估限制。','tags':['大模型后训练','GRPO','GSM8K'],'time':'项目实录','status':'真实记录'}
+grpo_featured = {'href':'research/mini-deepseek-r1-zero/','type':'实验记录','no':'02','title':(ROOT / 'research/mini-deepseek-r1-zero/README.md').read_text(encoding='utf-8').splitlines()[0].removeprefix('# ').strip(),'desc':'Qwen3-1.7B-Base 纯 GRPO 训练500步：100题正确率从51%提高到81%，其中35题由错变对、5题由对变错。','tags':['大模型后训练','GRPO','GSM8K'],'time':'项目实录','status':'真实记录'}
 all_entries = [grpo_featured, featured, *posts]
 
 def entry(p):
