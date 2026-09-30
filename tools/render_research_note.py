@@ -18,7 +18,7 @@ SECTION_REDIRECTS = {
 }
 
 
-def render_note(root: Path, shell, icon, slug="medical-grpo", label="MEDICAL GRPO / 01", lead="从三奖励 GRPO、扩大 SFT 到直接 GRPO 与 DAPO 的一次实验复盘。", legacy=True) -> None:
+def render_note(root: Path, shell, icon, slug="medical-grpo", eyebrow="MEDICAL GRPO / 01", lead="从三奖励 GRPO、扩量 SFT 到直接 GRPO 与 DAPO 的一次实验复盘。", legacy=True) -> None:
     """Read the project's README.md and build one article plus legacy redirects."""
     folder = root / "research" / slug
     content = (folder / "README.md").read_text(encoding="utf-8")
@@ -63,7 +63,7 @@ def render_note(root: Path, shell, icon, slug="medical-grpo", label="MEDICAL GRP
         '<div class="page-wrap article-wrap">'
         '<a class="back-link" href="../../notes.html">← 返回学习手记</a>'
         '<header class="article-header">'
-        f'<div class="eyebrow">{escape(label)}</div>'
+        f'<div class="eyebrow">{escape(eyebrow)}</div>'
         f'<h1>{escape(title)}</h1>'
         f'<p class="article-lead">{escape(lead)}</p>'
         '<div class="post-meta"><span>iris</span><span>实验记录</span>'

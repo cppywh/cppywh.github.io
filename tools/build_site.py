@@ -53,7 +53,7 @@ for link in ['assets/favicon.svg','assets/style.css','assets/site.js','assets/th
 (ROOT/'404.html').write_text(error_page,encoding='utf-8')
 (ROOT/'.nojekyll').touch()
 render_note(ROOT, shell, icon)
-render_note(ROOT, shell, icon, slug="mini-deepseek-r1-zero", label="GRPO / 02", lead="500步纯GRPO，同题净增30个百分点；同时复盘截断、解析和条件准确率。", legacy=False)
+render_note(ROOT, shell, icon, slug="mini-deepseek-r1-zero", eyebrow="GRPO / 02", lead="500步纯GRPO，同题净增30个百分点；同时复盘截断、解析和条件准确率。", legacy=False)
 print('Built the static site and single medical GRPO note. No private notebook data imported.')
 
 
