@@ -18,9 +18,9 @@ SECTION_REDIRECTS = {
 }
 
 
-def render_note(root: Path, shell, icon) -> None:
+def render_note(root: Path, shell, icon, slug="medical-grpo", label="MEDICAL GRPO / 01", lead="从三奖励 GRPO、扩大 SFT 到直接 GRPO 与 DAPO 的一次实验复盘。", legacy=True) -> None:
     """Read the project's README.md and build one article plus legacy redirects."""
-    folder = root / "research" / "medical-grpo"
+    folder = root / "research" / slug
     content = (folder / "README.md").read_text(encoding="utf-8")
     title = content.splitlines()[0].removeprefix("# ").strip()
     content = re.sub(
@@ -56,16 +56,16 @@ def render_note(root: Path, shell, icon) -> None:
     )
     source_url = (
         "https://github.com/cppywh/cppywh.github.io/blob/main/"
-        "research/medical-grpo/README.md"
+        f"research/{slug}/README.md"
     )
     body = (
         '<div class="reading-progress" aria-hidden="true"></div>'
         '<div class="page-wrap article-wrap">'
         '<a class="back-link" href="../../notes.html">← 返回学习手记</a>'
         '<header class="article-header">'
-        '<div class="eyebrow">MEDICAL GRPO / 01</div>'
+        f'<div class="eyebrow">{escape(label)}</div>'
         f'<h1>{escape(title)}</h1>'
-        '<p class="article-lead">从三奖励 GRPO、扩量 SFT 到直接 GRPO 与 DAPO 的一次实验复盘。</p>'
+        f'<p class="article-lead">{escape(lead)}</p>'
         '<div class="post-meta"><span>iris</span><span>实验记录</span>'
         '<span>基于公开汇总数据</span></div></header>'
         '<div class="article-layout"><article class="prose">'
@@ -88,7 +88,7 @@ def render_note(root: Path, shell, icon) -> None:
     (folder / "index.html").write_text(page.replace("@@ARTICLE@@", body), encoding="utf-8")
 
     # Keep shared links to the former section pages useful after consolidation.
-    for old_page, section in SECTION_REDIRECTS.items():
+    for old_page, section in (SECTION_REDIRECTS.items() if legacy else []):
         destination = f"index.html#{quote(section)}"
         redirect = (
             '<!doctype html><html lang="zh-CN"><meta charset="utf-8">'
