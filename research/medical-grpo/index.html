@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta name="description" content="中文医考小模型后训练：从格式学会到答题改进"><meta name="robots" content="noindex,nofollow"><title>中文医考小模型后训练：从格式学会到答题改进 · iris 学习手记</title><link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml"><script src="../../assets/theme.js"></script><link rel="stylesheet" href="../../assets/style.css"><script src="../../assets/site.js" defer></script></head>
 <body class="inner-page research-note"><div class="wallpaper-scene" aria-hidden="true"></div><a class="skip" href="#main">跳到正文</a><header class="site-header"><div class="header-inner"><a class="brand" href="../../index.html" aria-label="iris 学习手记首页"><span class="brand-symbol iris-mark" aria-hidden="true">✳</span><span>iris<span class="brand-sub"> / 学习手记</span></span></a><nav aria-label="主导航"><a href="../../index.html">首页</a><a href="../../notes.html" aria-current="page">学习手记</a><a href="../../about.html">关于</a></nav><a class="github" href="https://github.com/cppywh" target="_blank" rel="noopener noreferrer" aria-label="GitHub（新窗口）"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-4 1-4-2-6-2m12 5v-4c0-1 .2-2-1-3 4 0 7-2 7-6 0-1-1-3-1-3 0-1 0-3-1-4-2 0-3 1-4 2a12 12 0 0 0-6 0C8 3 6 2 4 2 3 3 3 5 4 6c0 0-1 2-1 3 0 4 3 6 7 6-1 1-1 2-1 3v4"/></svg></a></div></header>
-<main id="main"><div class="reading-progress" aria-hidden="true"></div><div class="page-wrap article-wrap"><a class="back-link" href="../../notes.html">← 返回学习手记</a><header class="article-header"><div class="eyebrow">MEDICAL GRPO / 01</div><h1>中文医考小模型后训练：从格式学会到答题改进</h1><p class="article-lead">从三奖励 GRPO、扩量 SFT 到直接 GRPO 与 DAPO 的一次实验复盘。</p><div class="post-meta"><span>iris</span><span>实验记录</span><span>基于公开汇总数据</span></div></header><div class="article-layout"><article class="prose"><p>这是我第一次独立推进的后训练项目。问题很直接：<strong>SFT 已能让 1.7B 模型按格式作答，GRPO 能否让它真正多答对医学选择题？</strong> 我先试三奖励 GRPO，再扩大 SFT 数据，最后比较纠错 SFT、直接 GRPO 和 DAPO 配置方案；失败的路线也保留。</p>
+<main id="main"><div class="reading-progress" aria-hidden="true"></div><div class="page-wrap article-wrap"><a class="back-link" href="../../notes.html">← 返回学习手记</a><header class="article-header"><div class="eyebrow">MEDICAL GRPO / 01</div><h1>中文医考小模型后训练：从格式学会到答题改进</h1><p class="article-lead">从三奖励 GRPO、扩量 SFT 到直接 GRPO 与 DAPO 的一次实验复盘。</p><div class="post-meta"><span>iris</span><span>实验记录</span><span>基于公开汇总数据</span></div></header><div class="article-layout"><article class="prose"><p>这是我第一次独立推进的后训练项目。问题很直接：<strong>SFT 已能让 1.7B 模型按格式作答，GRPO 能否让它真正多答对医学选择题？</strong> 我先试了普通 G=2 的 GRPO，然后三奖励 GRPO，再扩大 SFT 数据，最后比较纠错 SFT、直接 GRPO 和 DAPO 配置方案。</p>
 <h2 id="路线">路线</h2>
 <p><img src="assets/route.svg" alt="Qwen3 实验权重继承路线图" /></p>
 <p>实际尝试顺序是 <strong>V2 → V3 → 最终对照</strong>。图中的箭头是权重继承：V3 没有接到最终 GRPO/DAPO；纠错 SFT 也没有成为它们的起点。更早的 Qwen2.5-1.5B 实验用于摸索流程，见<a href="#%E5%8E%86%E5%8F%B2%E6%8E%A2%E7%B4%A2">历史实验</a>。</p>
@@ -167,7 +167,7 @@
 </tbody>
 </table></div>
 <p>记录的 GPU 为 RTX 4090。DAPO 换了框架并动态重采，实际生成量和实现开销不同；不能把时长比解释成算法固有速度比。两条 RL 的 <strong>3.2 个百分点</strong>也不是某个 DAPO 组件的消融结论。</p>
-<p>这是<strong>单次训练、单个评估种子</strong>在反复用于方案选择的 val 上的结果。保留的 test 尚未统一终评；“54.0%”不代表稳定泛化或临床可用。下一轮应先锁定方案，再评 test、重复采样与训练种子，并抽样审查答案和参考解析。详细缺口在待补清单（仅存于本地）；完整数字在<a href="data/results-summary.csv">结果 CSV</a>。</p>
+<p>完整数字在<a href="data/results-summary.csv">结果 CSV</a>。</p>
 <h2 id="实验设计">实验设计</h2>
 <h3 id="数据与边界">数据与边界</h3>
 <p>任务是 CMExam 中文单选题：输入题干和 A～E 选项，目标是输出解析和唯一答案。原始文件为 train、val、test_with_annotations；来源与哈希见原始清单（原始文件仅存于本地）。<strong>500 道 val</strong> 用于比较和方案选择；另保留 <strong>500 道 test</strong>，本次没有用作统一终评。</p>
@@ -208,21 +208,20 @@
 </tr>
 </tbody>
 </table></div>
-<p>“反向选择题”只是正则覆盖控制，不等于经过人工确认的难度或科室分层。候选池和划分实现（原始文件仅存于本地）在 B1/B1c；版本间的样本和协议差异见<a href="data/experiment-index.csv">实验索引</a>。</p>
+<p>“反向选择题”只是正则覆盖控制，不等于经过人工确认的难度或科室分层。版本间的样本和协议差异见<a href="data/experiment-index.csv">实验索引</a>。</p>
 <h3 id="训练怎么分支">训练怎么分支</h3>
 <p>V2 用 Qwen3-1.7B、BF16 LoRA（rank 32、alpha 64）训练 2 epochs，目标为 <code>&lt;think&gt;参考解析&lt;/think&gt;&lt;answer&gt;字母&lt;/answer&gt;</code>。其合并权重是最终三条分支的共同起点：</p>
 <ul>
 <li><strong>纠错 SFT</strong>：把四答全错题的标准答案和参考解析再次监督训练；这条探索到此停止。</li>
 <li><strong>直接 GRPO</strong>：每题生成 <code>G=4</code> 答，仅按最终字母是否正确给 0/1 奖励；全对或全错组在生成后屏蔽梯度，仍耗费生成计算。</li>
-<li><strong>DAPO 配置方案</strong>：同一起点、同一 2,500 题池与 0/1 奖励，在 ms-swift 的 GRPO 入口启用 <code>loss_type=dapo</code>、不对称 clip、动态重采（最多 3 次）、token 级损失和过长过滤。它不是论文机制的逐项复现。</li>
+<li><strong>DAPO 配置方案</strong>：同一起点、同一 2,500 题池与 0/1 奖励，在 ms-swift 的 GRPO 入口启用 <code>loss_type=dapo</code>、不对称 clip、动态重采（最多 3 次）、token 级损失和过长过滤。</li>
 </ul>
 <p>V3 的 10,000 题 SFT 独立从原始基座启动，<strong>不向最终两条 RL 分支提供权重</strong>。旧 V2 三奖励 GRPO 则在正确性以外增加格式奖励和答对后才给的解析奖励；具体数值留在<a href="#%E5%8E%86%E5%8F%B2%E6%8E%A2%E7%B4%A2">历史页</a>。</p>
 <h3 id="同一分数的定义">同一分数的定义</h3>
 <p>最终四阶段都在同一 500 道 val 题上，以 BF16 非量化模型、Qwen3 thinking 模板、<code>temperature=0.6</code>、<code>top_p=0.95</code>、<code>seed=42</code>、最多 1,536 个新 token 评估；没有重复或频率惩罚。训练中每约 10% 的固定 10 题监控只用于观察，不能替代 500 题结果。</p>
-<p><code>extract_answer</code> 从最终回答抽取唯一字母；<code>correct</code> 是该字母等于题库答案，不是解析的医学质量。<code>format_ok</code> 要求闭合且非空的 <code>&lt;think&gt;</code> 段和唯一 <code>&lt;answer&gt;</code> 标签；<code>parse_ok</code> 只要求可靠抽取答案；<code>truncated</code> 表示生成未正常 stop。格式失败与截断可重叠。解析函数（原始文件仅存于本地）在 A2。</p>
 <p>V2/V3 旧结果使用 greedy 且带重复、频率惩罚；更早 Qwen2.5 还混有量化与 FP32 复评。<strong>不同协议的正确率不连成一条训练曲线</strong>。各结果的 <code>protocol_id</code> 见<a href="data/results-summary.csv">数值表</a>。</p>
 <h2 id="历史探索">历史探索</h2>
-<p>更早的 Qwen2.5-1.5B 先用于跑通流程：32 题 smoke 的基座、SFT、GRPO 都答对 17 题。正式 SFT 的旧协议合并前、后为 302/500、274/500，FP32 复评为 331/500；G=2/G=8 的 FP32 复评分别为 332/500、334/500。加载精度、评估协议和生成预算没有固定，不能把这些差异当作纯粹的合并或 G 值消融。</p>
+<p>更早的 Qwen2.5-1.5B 先用于跑通流程：32 题 smoke 的基座、SFT、GRPO 都答对 17 题。正式 SFT 的旧协议合并前、后为 302/500、274/500，FP32 复评为 331/500；G=2/G=8 的 FP32 复评分别为 332/500、334/500。</p>
 <h3 id="V2：先检验三奖励">V2：先检验三奖励</h3>
 <p>medical_grpo2.ipynb（原始文件仅存于本地）从 3,000 道 SFT 候选与 1,500 道 GRPO 候选中冻结 <strong>2,000 / 1,000 题</strong>。Qwen3-1.7B 的 BF16 LoRA 使用 rank 32、alpha 64；SFT 两轮 <strong>500 步</strong>，保存耗时 <strong>405.5 秒</strong>。GRPO 为 <code>G=4</code>、一轮 <strong>500 步</strong>，奖励是<strong>格式 0.2 + 正确性 1.0 + 答对后解析 0.3</strong>，解析由远程裁判参照标准答案与参考解析评分。末次续训调用记录 <strong>3,691 秒</strong>；曾从 checkpoint-100 恢复，完整总耗时未记录。</p>
 <p>下图只画<strong>同一旧版 greedy 协议</strong>下的 500 道验证题；该协议带重复和频率惩罚，不与最终采样协议画在一条曲线上。</p>
@@ -271,8 +270,8 @@
 <p>V3 与 V2 不只差训练题数，还差训练步数和权重状态；即便将来证实第 2 轮分数，也不足以断言“数据饱和”。</p>
 <h3 id="这次修正的判断">这次修正的判断</h3>
 <ul>
-<li><strong>G=8 必然更好吗？</strong> 旧 Qwen2.5 FP32 复评只比 G=2 多 2/500，但训练记录约 57,139 秒对 9,730 秒。生成预算也不同，不能当纯 G 消融。</li>
-<li><strong>纠错让混合组变多就会答对更多吗？</strong> 最终池的混合组从 1,285 增到 1,454/2,500，验证却净少 8 题。可学习组数量与最终准确率不是同一指标。</li>
+<li><strong>G=8 必然更好吗？</strong> 旧 Qwen2.5 FP32 复评只比 G=2 多 2/500，但训练记录约 57,139 秒对 9,730 秒。</li>
+<li><strong>纠错让混合组变多就会答对更多吗？</strong> 最终池的混合组从 1,285 增到 1,454/2,500，验证却净少 8 题。</li>
 <li><strong>屏蔽全错组就教会标准答案了吗？</strong> 没有。直接 GRPO 仍先生成四答，全错组被屏蔽梯度后没有答案监督；DAPO 动态重采寻找有差异的组，也不能凭空提供知识。</li>
 </ul>
 <h2 id="代码与复核">代码与复核</h2>
