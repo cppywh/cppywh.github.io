@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta name="description" content="LLM Quantization：大模型量化阅读笔记"><meta name="robots" content="noindex,nofollow"><title>LLM Quantization：大模型量化阅读笔记 · iris 学习手记</title><link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml"><script src="../../assets/theme.js"></script><link rel="stylesheet" href="../../assets/style.css"><script src="../../assets/site.js" defer></script></head>
+<body class="inner-page research-note"><div class="wallpaper-scene" aria-hidden="true"></div><a class="skip" href="#main">跳到正文</a><header class="site-header"><div class="header-inner"><a class="brand" href="../../index.html" aria-label="iris 学习手记首页"><span class="brand-symbol iris-mark" aria-hidden="true">✳</span><span>iris<span class="brand-sub"> / 学习手记</span></span></a><nav aria-label="主导航"><a href="../../index.html">首页</a><a href="../../notes.html" aria-current="page">学习手记</a><a href="../../about.html">关于</a></nav><a class="github" href="https://github.com/cppywh" target="_blank" rel="noopener noreferrer" aria-label="GitHub（新窗口）"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-4 1-4-2-6-2m12 5v-4c0-1 .2-2-1-3 4 0 7-2 7-6 0-1-1-3-1-3 0-1 0-3-1-4-2 0-3 1-4 2a12 12 0 0 0-6 0C8 3 6 2 4 2 3 3 3 5 4 6c0 0-1 2-1 3 0 4 3 6 7 6-1 1-1 2-1 3v4"/></svg></a></div></header>
+<main id="main"><div class="reading-progress" aria-hidden="true"></div><div class="page-wrap article-wrap"><a class="back-link" href="../../notes.html">← 返回学习手记</a><header class="article-header"><div class="eyebrow">READING / LLM QUANTIZATION</div><h1>LLM Quantization：大模型量化阅读笔记</h1><p class="article-lead">记录大模型量化相关论文、概念理解与实践，持续更新。</p><div class="post-meta"><span>iris</span><span>论文阅读</span><span>写作中</span></div></header><div class="article-layout"><article class="prose"><p>这里记录大模型量化相关论文、概念理解与实践。持续更新中，目前先保留写作框架。</p>
+<h2 id="阅读索引">阅读索引</h2>
+<p>后续在这里添加论文标题、原文链接、阅读日期与对应笔记章节。</p>
+<h2 id="基础概念">基础概念</h2>
+<p>待补充：量化精度、尺度与零点、量化粒度、权重与激活量化，以及 PTQ / QAT。</p>
+<h2 id="论文笔记">论文笔记</h2>
+<p>每篇论文可以按下面的结构继续写：</p>
+<h3 id="论文标题（待填写）">论文标题（待填写）</h3>
+<ul>
+<li>原文链接：待填写</li>
+<li>阅读日期：待填写</li>
+<li>核心问题：</li>
+<li>方法与关键公式：</li>
+<li>实验设置与主要结果：</li>
+<li>我的理解与疑问：</li>
+<li>实现链接与值得查看的代码：</li>
+</ul>
+<h2 id="方法对比">方法对比</h2>
+<p>待整理：在一致的模型、数据和评估条件下，对比精度、显存、速度及适用范围。未核实的数据暂不填写。</p>
+<h2 id="实践记录">实践记录</h2>
+<p>待记录：环境、模型版本、量化配置、运行命令、结果与遇到的问题。</p>
+<h2 id="待解决的问题">待解决的问题</h2>
+<p>在这里保留阅读中尚未理解的细节，以及下一次想验证的想法。</p>
+<p><a href="https://github.com/cppywh/cppywh.github.io/blob/main/reading/llm-quantization/LLM%20Quantization.md" target="_blank" rel="noopener noreferrer">在 GitHub 查看 Markdown 原文 ↗</a></p><div class="article-end"><span>— END —</span><p>记录到这里，下一步继续。</p></div></article><aside class="toc"><div class="toc-inner"><span class="eyebrow">本页目录</span><nav aria-label="文章目录"><a href="#%E9%98%85%E8%AF%BB%E7%B4%A2%E5%BC%95"><span>01</span>阅读索引</a><a href="#%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5"><span>02</span>基础概念</a><a href="#%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0"><span>03</span>论文笔记</a><a href="#%E6%96%B9%E6%B3%95%E5%AF%B9%E6%AF%94"><span>04</span>方法对比</a><a href="#%E5%AE%9E%E8%B7%B5%E8%AE%B0%E5%BD%95"><span>05</span>实践记录</a><a href="#%E5%BE%85%E8%A7%A3%E5%86%B3%E7%9A%84%E9%97%AE%E9%A2%98"><span>06</span>待解决的问题</a></nav><a class="back-top" href="#main">↑ 回到顶部</a></div></aside></div></div></main><footer class="site-footer"><div><a class="footer-name" href="../../index.html">iris / 学习手记</a><p>把实验做一遍，把理解写下来。</p></div><div class="footer-right"><span><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg> 保持好奇，慢慢生长。</span><small>实验与学习记录 · <a data-wallpaper-source href="https://wallhaven.cc/w/6kqzl6" target="_blank" rel="noopener noreferrer">壁纸来源 ↗</a></small></div></footer><div class="toast" role="status" aria-live="polite"></div></body></html>
