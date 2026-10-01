@@ -1,15 +1,14 @@
-/* Five user-selected wallpapers. Shuffle without repeats; retain on navigation. */
+/* Four user-selected wallpapers. Shuffle without repeats; retain on navigation. */
 (() => {
   'use strict';
   const palettes = [
     {id:'6kqzl6',name:'雕塑 · 雾紫',bg:'#f8f6f9',ink:'#393441',muted:'#686071',accent:'#796085',soft:'#eee7f0',line:'#dfd5e4',mark:'#668379',wash:'#e8e1ee',veil:'.72',position:'50% 50%',quote:'把好奇种下，等理解开花。'},
     {id:'8g8jpy',name:'草坡 · 雾绿',bg:'#f4f7f3',ink:'#334239',muted:'#5f7164',accent:'#57775f',soft:'#e5eee3',line:'#d3dfd0',mark:'#8493a6',wash:'#dfe9db',veil:'.67',position:'50% 50%',quote:'在雾里走一程，也是在向前。'},
     {id:'kxp797',name:'机械 · 冰蓝',bg:'#f3f9fa',ink:'#29434a',muted:'#526d75',accent:'#2b7483',soft:'#e2f0f2',line:'#cddfe3',mark:'#8d7899',wash:'#dbeef2',veil:'.56',position:'65% 50%',quote:'在代码与想象之间，慢慢理解。'},
-    {id:'837ymk',name:'几何 · 钴蓝',bg:'#f7faff',ink:'#283e56',muted:'#556b83',accent:'#2468a0',soft:'#e5eef9',line:'#d1deef',mark:'#7598aa',wash:'#e1ebf9',veil:'.55',position:'50% 50%',quote:'把复杂拆开，让理解一块一块生长。'},
-    {id:'w5m6yr',name:'晶体 · 湖青',bg:'#f0f7fa',ink:'#29444c',muted:'#4b6974',accent:'#28768c',soft:'#dfeef3',line:'#c9dfe8',mark:'#6d7eab',wash:'#d4e9f0',veil:'.82',position:'50% 50%',quote:'每一次尝试，都折射出一点新的光。'}
+    {id:'8g87vj',name:'初音 · 薄荷粉',bg:'#f6faf9',ink:'#304348',muted:'#5b7074',accent:'#348b88',soft:'#e1f1ed',line:'#cfe2dd',mark:'#c982a6',wash:'#e2f2ef',veil:'.66',position:'50% 50%',quote:'让灵感轻轻响起，把好奇慢慢写下。'}
   ];
   const assetBase = new URL('wallpapers/', document.currentScript.src);
-  const storageKey = 'iris-wallpapers-v2';
+  const storageKey = 'iris-wallpapers-v3';
   let saved = {};
   try { saved = JSON.parse(sessionStorage.getItem(storageKey) || '{}') || {}; } catch {}
   let index = Number.isInteger(saved.index) && saved.index >= 0 && saved.index < palettes.length ? saved.index : -1;

@@ -47,14 +47,13 @@ HTML/CSS/JS 已可直接由 GitHub Pages 托管，`.nojekyll` 用于按静态文
 
 站内名字为 iris（ywh → 鸢尾花），GitHub 链接仍保留真实账号。
 
-`assets/theme.js` 将五张壁纸与浅色主题配对。首次访问随机选择，刷新消耗一个随机候选；一轮内不重复，下一轮不与上一张相同。站内导航保留当前主题，首页色点可手动选择，“换一张”无需刷新。使用 sessionStorage 仅保存当前标签页的主题及候选列表；如果浏览器禁用存储，仍能换主题，但跨刷新不重复的保证失效。
+`assets/theme.js` 将四张壁纸与浅色主题配对。首次访问随机选择，刷新消耗一个随机候选；一轮内不重复，下一轮不与上一张相同。站内导航保留当前主题，首页色点可手动选择，“换一张”无需刷新。使用 sessionStorage 仅保存当前标签页的主题及候选列表；如果浏览器禁用存储，仍能换主题，但跨刷新不重复的保证失效。
 
 壁纸为用户提供的 Wallhaven 链接，原图本地保存，无远程图片 API 依赖，也不修改原图或署名：
 
 - 6kqzl6：https://wallhaven.cc/w/6kqzl6 — 雕塑 / 雾紫
 - 8g8jpy：https://wallhaven.cc/w/8g8jpy — 草坡 / 雾绿（第二个主题）
 - kxp797：https://wallhaven.cc/w/kxp797 — 机械 / 冰蓝；来源页列出 Abdallah Talaat，原作：https://www.deviantart.com/abdallahtalat/art/Seraphim-Nexus-1148588696
-- 837ymk：https://wallhaven.cc/w/837ymk — 几何 / 钴蓝
-- w5m6yr：https://wallhaven.cc/w/w5m6yr — 晶体 / 湖青
+- 8g87vj：https://wallhaven.cc/w/8g87vj — 初音 / 薄荷粉（第四个主题）
 
-来源记录不表示版权转让。五张壁纸按用户提供的链接选用，并随网站发布；页脚提供当前壁纸来源链接。
+来源记录不表示版权转让。四张壁纸按用户提供的链接选用，并随网站发布；页脚提供当前壁纸来源链接。
