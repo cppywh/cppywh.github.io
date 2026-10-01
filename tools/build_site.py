@@ -1,6 +1,7 @@
 from pathlib import Path
 from html import escape
 from render_research_note import render_note
+from build_literature import build_literature
 
 ROOT = Path(__file__).resolve().parents[1]
 (ROOT / 'assets').mkdir(exist_ok=True)
@@ -10,7 +11,7 @@ def icon(name):
     return f'<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">{paths[name]}</svg>'
 
 def shell(title, active, body, description='iris 的个人博客，记录学习笔记、日常与思考。'):
-    nav = ''.join(f'<a href="{url}"'+ (' aria-current="page"' if active==key else '') +f'>{label}</a>' for key,url,label in [('home','index.html','首页'),('notes','notes.html','学习手记'),('about','about.html','关于')])
+    nav = ''.join(f'<a href="{url}"'+ (' aria-current="page"' if active==key else '') +f'>{label}</a>' for key,url,label in [('home','index.html','首页'),('notes','notes.html','学习手记'),('literature','literature.html','文献架'),('about','about.html','关于')])
     return f'''<!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta name="description" content="{escape(description)}"><meta name="robots" content="noindex,nofollow"><title>{escape(title)} · iris 学习手记</title><link rel="icon" href="assets/favicon.svg" type="image/svg+xml"><script src="assets/theme.js"></script><link rel="stylesheet" href="assets/style.css"><script src="assets/site.js" defer></script></head>
 <body class="{'home-page' if active == 'home' else 'inner-page'}"><div class="wallpaper-scene" aria-hidden="true"></div><a class="skip" href="#main">跳到正文</a><header class="site-header"><div class="header-inner"><a class="brand" href="index.html" aria-label="iris 学习手记首页"><span class="brand-symbol iris-mark" aria-hidden="true">✳</span><span>iris<span class="brand-sub"> / 学习手记</span></span></a><nav aria-label="主导航">{nav}</nav><a class="github" href="https://github.com/cppywh" target="_blank" rel="noopener noreferrer" aria-label="GitHub（新窗口）">{icon('github')}</a></div></header>
@@ -49,7 +50,7 @@ for idx,p in enumerate(posts):
     (ROOT/f"{p['slug']}.html").write_text(shell(p['title'],'notes',body,p['desc']),encoding='utf-8')
 
 error_page = shell('页面未找到','', '<div class="page-wrap page-intro"><div class="eyebrow">404 / A MISSING PAGE</div><h1>这一页，还没写到。</h1><p>链接可能已经变化，回到首页继续翻翻吧。</p><a class="text-link" href="/">返回首页 →</a></div>')
-for link in ['assets/favicon.svg','assets/style.css','assets/site.js','assets/theme.js','index.html','notes.html','about.html']:
+for link in ['assets/favicon.svg','assets/style.css','assets/site.js','assets/theme.js','index.html','notes.html','about.html','literature.html']:
     error_page = error_page.replace('"'+link+'"', '"/'+link+'"')
 (ROOT/'404.html').write_text(error_page,encoding='utf-8')
 (ROOT/'.nojekyll').touch()
@@ -60,3 +61,5 @@ print('Built the static site and single medical GRPO note. No private notebook d
 
 
 render_note(ROOT, shell, icon, slug="llm-quantization", collection="reading", source_name="LLM Quantization.md", eyebrow="READING / LLM QUANTIZATION", lead="记录大模型量化相关论文、概念理解与实践，持续更新。", legacy=False, category="论文阅读", status="写作中")
+
+build_literature(ROOT, shell)

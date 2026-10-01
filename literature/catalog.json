@@ -1,0 +1,36 @@
+[
+  {
+    "id": "lora",
+    "name": "LoRA",
+    "title": "LoRA: Low-Rank Adaptation of Large Language Models",
+    "file": "LoRA.pdf",
+    "pages": 26,
+    "tags": [
+      "高效微调"
+    ],
+    "status": "待读"
+  },
+  {
+    "id": "qlora",
+    "name": "QLoRA",
+    "title": "QLoRA: Efficient Finetuning of Quantized LLMs",
+    "file": "QLoRA.pdf",
+    "pages": 26,
+    "tags": [
+      "量化",
+      "高效微调"
+    ],
+    "status": "待读"
+  },
+  {
+    "id": "awq",
+    "name": "AWQ",
+    "title": "AWQ: Activation-Aware Weight Quantization for On-Device LLM Compression and Acceleration",
+    "file": "awq.pdf",
+    "pages": 15,
+    "tags": [
+      "量化"
+    ],
+    "status": "待读"
+  }
+]

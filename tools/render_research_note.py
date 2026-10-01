@@ -81,7 +81,7 @@ def render_note(root: Path, shell, icon, slug="medical-grpo", eyebrow="MEDICAL G
     )
     page = shell(title, "notes", "@@ARTICLE@@", title)
     for path in (
-        "index.html", "notes.html", "about.html", "assets/favicon.svg",
+        "index.html", "notes.html", "about.html", "literature.html", "assets/favicon.svg",
         "assets/style.css", "assets/theme.js", "assets/site.js",
     ):
         page = page.replace(f'"{path}"', f'"../../{path}"')
